@@ -20,4 +20,4 @@ include_directories (${PROJECT_SOURCE_DIR}/tao/undvc_common)
 include_directories (${Boost_INCLUDE_DIR})
 
 add_executable(EconMrsyx econ_mrsyx)
-target_link_libraries(EconMrsyx undvc_common EvolutionaryAlgorithms DeterministicAlgorithms undvc_common)
+target_link_libraries(EconMrsyx undvc_common EvolutionaryAlgorithms DeterministicAlgorithms undvc_common ${Boost_LIBRARIES})
