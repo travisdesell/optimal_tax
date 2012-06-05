@@ -10,6 +10,12 @@ set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} /opt/local/lib)
 
 #set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
+set(BOOST_LIB_PREFIX "lib")
+set(Boost_LIB_PREFIX "lib")
+set(BOOST_COMPILER "-vc100")
+set(Boost_COMPILER "-vc100")
+set(Boost_ADDITIONAL_VERSIONS "1.47" "1.47.0")
+
 find_package(Boost REQUIRED)
 
 add_subdirectory(tao)
@@ -19,5 +25,11 @@ include_directories (${PROJECT_SOURCE_DIR}/tao/deterministic_algorithms)
 include_directories (${PROJECT_SOURCE_DIR}/tao/undvc_common)
 include_directories (${Boost_INCLUDE_DIR})
 
+
 add_executable(EconMrsyx econ_mrsyx)
 target_link_libraries(EconMrsyx undvc_common EvolutionaryAlgorithms DeterministicAlgorithms undvc_common ${Boost_LIBRARIES})
+
+add_subdirectory(multi_objective)
+
+add_executable(Elasticities elasticities)
+target_link_libraries(Elasticities multi_objective EvolutionaryAlgorithms DeterministicAlgorithms undvc_common ${Boost_LIBRARIES})

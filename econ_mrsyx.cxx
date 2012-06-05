@@ -13,12 +13,7 @@
 //from undvc_common
 #include "arguments.hxx"
 
-
 using namespace std;
-
-
-//undvc_common.lib(vector_io.obj) : error LNK2019: unresolved external symbol "void __cdecl boost::throw_exception(class std::exception const &)" (?throw_exception@boost@@YAXABVexception@std@@@Z) referenced in function "public: class boost::iterator_range<class std::_String_iterator<char,struct std::char_traits<char>,class std::allocator<char> > > __thiscall boost::function2<class boost::iterator_range<class std::_String_iterator<char,struct std::char_traits<char>,class std::allocator<char> > >,class std::_String_iterator<char,struct std::char_traits<char>,class std::allocator<char> >,class std::_String_iterator<char,struct std::char_traits<char>,class std::allocator<char> > >::operator()(class std::_String_iterator<char,struct std::char_traits<char>,class std::allocator<char> >,class std::_String_iterator<char,struct std::char_traits<char>,class std::allocator<char> >)const " (??R?$function2@V?$iterator_range@V?$_String_iterator@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@boost@@V?$_String_iterator@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@V34@@boost@@QBE?AV?$iterator_range@V?$_String_iterator@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@1@V?$_String_iterator@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@0@Z)
-
 
 /**
  *  The following are used to read the data elements from the given file
