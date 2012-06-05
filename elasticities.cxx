@@ -35,9 +35,11 @@ double time_endowment = 70;
 double virtual_inc = 88.3237;
 double total_income = 760.0689;
 
+double constraint_penalty = 0.0001;
+
 /* Calculate a penalty for being less than or equal to the bound given*/
 double penalty_leq(double max, double value) {
-    if (value <= max) return 1 + (max - value);
+    if (value <= max) return constraint_penalty + (max - value);
     return 0;
 }
 
@@ -48,23 +50,23 @@ double penalty_in_inclusive(double min, double max, double value) {
         double diff_max = max - value;  /* difference from the max value */
 
         /* return the difference from the closest boundary.  Maybe it should the farthest boundary? */
-        if (diff_min > diff_max) return 1 + diff_max;
-        else return 1 + diff_min;
+        if (diff_min > diff_max) return constraint_penalty + diff_max;
+        else return constraint_penalty + diff_min;
     }
     return 0;
 }
 
 /* Calculate a penalty for being outside the bounds given */
 double penalty_out_inclusive(double min, double max, double value) {
-    if (value <= min) return 1 + (min - value);
-    if (value >= max) return 1 + (value - max);
+    if (value <= min) return constraint_penalty + (min - value);
+    if (value >= max) return constraint_penalty + (value - max);
     return 0;
 }
 
 double fitness(const vector<double> &A) {
     double f = 0;
 //    vector<bool> success;
-    vector<double> penalties;
+//    vector<double> penalties;
 
     /* mux_v > 0 */
     /* muy_v > 0 */
@@ -164,9 +166,9 @@ int main(int number_arguments, char **argv) {
 
     } else if (search_type.compare("sweep") == 0) {
         vector<double> step_size(6, 0);
-        step_size[0] = 0.01;
-        step_size[1] = 0.01;
-        step_size[2] = 0.01;
+        step_size[0] = 0.005;
+        step_size[1] = 0.005;
+        step_size[2] = 0.005;
 
         parameter_sweep(min_bound, max_bound, step_size, fitness);
 
