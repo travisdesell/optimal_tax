@@ -21,15 +21,15 @@ find_package(Boost REQUIRED)
 add_subdirectory(tao)
 
 include_directories (${PROJECT_SOURCE_DIR}/tao/evolutionary_algorithms)
-include_directories (${PROJECT_SOURCE_DIR}/tao/deterministic_algorithms)
+include_directories (${PROJECT_SOURCE_DIR}/tao/synchronous_algorithms)
 include_directories (${PROJECT_SOURCE_DIR}/tao/undvc_common)
 include_directories (${Boost_INCLUDE_DIR})
 
 
 add_executable(EconMrsyx econ_mrsyx)
-target_link_libraries(EconMrsyx undvc_common EvolutionaryAlgorithms DeterministicAlgorithms undvc_common ${Boost_LIBRARIES})
+target_link_libraries(EconMrsyx undvc_common EvolutionaryAlgorithms SynchronousAlgorithms undvc_common ${Boost_LIBRARIES})
 
 add_subdirectory(multi_objective)
 
 add_executable(Elasticities elasticities)
-target_link_libraries(Elasticities multi_objective EvolutionaryAlgorithms DeterministicAlgorithms undvc_common ${Boost_LIBRARIES})
+target_link_libraries(Elasticities multi_objective EvolutionaryAlgorithms SynchronousAlgorithms undvc_common ${Boost_LIBRARIES})

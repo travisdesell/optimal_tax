@@ -5,14 +5,16 @@
 #include <vector>
 #include <string>
 
-#include "particle_swarm.hxx"
-#include "differential_evolution.hxx"
+#include "tao/evolutionary_algorithms/particle_swarm.hxx"
+#include "tao/evolutionary_algorithms/differential_evolution.hxx"
 
-#include "parameter_sweep.hxx"
+#include "tao/synchronous_algorithms/parameter_sweep.hxx"
+#include "tao/synchronous_algorithms/synchronous_gradient_descent.hxx"
+#include "tao/synchronous_algorithms/synchronous_newton_method.hxx"
 
 //from undvc_common
-#include "arguments.hxx"
-#include "vector_io.hxx"
+#include "tao/undvc_common/arguments.hxx"
+#include "tao/undvc_common/vector_io.hxx"
 
 #include "multi_objective/stdafx.h"
 
@@ -65,7 +67,7 @@ double penalty_out_inclusive(double min, double max, double value) {
     return 0;
 }
 
-double fitness(const vector<double> &A) {
+double objective_function(const vector<double> &A) {
     double f = 0;
     uint32_t success_count = 0;
 
@@ -129,7 +131,7 @@ double fitness(const vector<double> &A) {
     return f;
 }
 
-double fitness_verbose(const vector<double> &A) {
+double objective_function_verbose(const vector<double> &A) {
     double f = 0;
     vector<bool> success;
     vector<double> penalties;
@@ -219,11 +221,11 @@ int main(int number_arguments, char **argv) {
 
     if (search_type.compare("ps") == 0) {
         ParticleSwarm ps(min_bound, max_bound, arguments);
-        ps.iterate(fitness);
+        ps.iterate(objective_function);
 
     } else if (search_type.compare("de") == 0) {
         DifferentialEvolution de(min_bound, max_bound, arguments);
-        de.iterate(fitness);
+        de.iterate(objective_function);
 
     } else if (search_type.compare("sweep") == 0) {
         vector<double> step_size(6, 0);
@@ -231,13 +233,36 @@ int main(int number_arguments, char **argv) {
         step_size[1] = 0.005;
         step_size[2] = 0.005;
 
-        parameter_sweep(min_bound, max_bound, step_size, fitness);
+        parameter_sweep(min_bound, max_bound, step_size, objective_function);
+
+    } else if (search_type.compare("snm") == 0 || search_type.compare("gd") == 0 || search_type.compare("cgd") == 0) {
+        srand48(time(NULL));
+        vector<double> starting_point(3, 0);
+        starting_point[0] = min_bound[0] + ((max_bound[0] - min_bound[0]) * drand48());
+        starting_point[1] = min_bound[1] + ((max_bound[1] - min_bound[1]) * drand48());
+        starting_point[2] = min_bound[2] + ((max_bound[2] - min_bound[2]) * drand48());
+
+        vector<double> step_size(6, 0);
+        step_size[0] = 0.005;
+        step_size[1] = 0.005;
+        step_size[2] = 0.005;
+
+        if (search_type.compare("snm") == 0) {
+            synchronous_newton_method(arguments, objective_function, starting_point, step_size);
+        } else if (search_type.compare("gd") == 0) {
+            synchronous_gradient_descent(arguments, objective_function, starting_point, step_size);
+        } else if (search_type.compare("cgd") == 0) {
+            synchronous_conjugate_gradient_descent(arguments, objective_function, starting_point, step_size);
+        }
 
     } else {
         fprintf(stderr, "Improperly specified search type: '%s'\n", search_type.c_str());
         fprintf(stderr, "Possibilities are:\n");
         fprintf(stderr, "    de     -       differential evolution\n");
         fprintf(stderr, "    ps     -       particle swarm optimization\n");
+        fprintf(stderr, "    snm    -       synchronous newton method\n");
+        fprintf(stderr, "    gd     -       gradient descent\n");
+        fprintf(stderr, "    cgd    -       conjugate gradient descent\n");
         exit(0);
     }
 
