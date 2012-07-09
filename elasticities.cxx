@@ -217,7 +217,16 @@ int main(int number_arguments, char **argv) {
     max_bound[2] = 3.0;
 
     string search_type;
-    get_argument(arguments, "--search_type", true, search_type);
+    if (!get_argument(arguments, "--search_type", false, search_type)) {
+        fprintf(stderr, "Improperly specified search type: '%s'\n", search_type.c_str());
+        fprintf(stderr, "Possibilities are:\n");
+        fprintf(stderr, "    de     -       differential evolution\n");
+        fprintf(stderr, "    ps     -       particle swarm optimization\n");
+        fprintf(stderr, "    snm    -       synchronous newton method\n");
+        fprintf(stderr, "    gd     -       gradient descent\n");
+        fprintf(stderr, "    cgd    -       conjugate gradient descent\n");
+        exit(0);
+	}
 
     if (search_type.compare("ps") == 0) {
         ParticleSwarm ps(min_bound, max_bound, arguments);
