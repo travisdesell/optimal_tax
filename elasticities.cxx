@@ -236,11 +236,19 @@ int main(int number_arguments, char **argv) {
         parameter_sweep(min_bound, max_bound, step_size, objective_function);
 
     } else if (search_type.compare("snm") == 0 || search_type.compare("gd") == 0 || search_type.compare("cgd") == 0) {
+		vector<double> starting_point(3, 0);
+
+#ifdef _MSC_VER
+		srand(time(NULL));
+        starting_point[0] = min_bound[0] + ((max_bound[0] - min_bound[0]) * ((double)rand()/(double)RAND_MAX));
+        starting_point[1] = min_bound[1] + ((max_bound[1] - min_bound[1]) * ((double)rand()/(double)RAND_MAX));
+        starting_point[2] = min_bound[2] + ((max_bound[2] - min_bound[2]) * ((double)rand()/(double)RAND_MAX));
+#else
         srand48(time(NULL));
-        vector<double> starting_point(3, 0);
-        starting_point[0] = min_bound[0] + ((max_bound[0] - min_bound[0]) * drand48());
+		starting_point[0] = min_bound[0] + ((max_bound[0] - min_bound[0]) * drand48());
         starting_point[1] = min_bound[1] + ((max_bound[1] - min_bound[1]) * drand48());
         starting_point[2] = min_bound[2] + ((max_bound[2] - min_bound[2]) * drand48());
+#endif
 
         vector<double> step_size(6, 0);
         step_size[0] = 0.005;
