@@ -1,1 +1,1 @@
-add_library(multi_objective den deninc dldMnum dldpnum dldqnum dldwnum dxdMnum dxdpnum dxdqnum dxdwnum dydMnum dydpnum dydqnum dydwnum minor2 minor3 minor4 mul mux muy)
+add_library(multi_objective dldI dldp dldq dldw dxdI dxdp dxdq dxdw dydI dydp dydq dydw minors mux) 
