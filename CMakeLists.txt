@@ -3,6 +3,8 @@ project (OPTIMAL_TAX)
 # The version number.
 set (OPTIMAL_TAX_VERSION_MAJOR 1)
 set (OPTIMAL_TAX_VERSION_MINOR 0)
+
+set(PLATFORM 64)
  
 set(CMAKE_CXX_FLAGS "-g -Wall -O3 -funroll-loops -ftree-vectorize -msse3")
 
@@ -16,7 +18,7 @@ set(BOOST_COMPILER "-vc100")
 set(Boost_COMPILER "-vc100")
 set(Boost_ADDITIONAL_VERSIONS "1.47" "1.47.0")
 
-find_package(Boost REQUIRED)
+find_package(Boost REQUIRED system filesystem)
 
 add_subdirectory(tao)
 
@@ -27,9 +29,9 @@ include_directories (${Boost_INCLUDE_DIR})
 
 
 add_executable(EconMrsyx econ_mrsyx)
-target_link_libraries(EconMrsyx undvc_common EvolutionaryAlgorithms SynchronousAlgorithms undvc_common ${Boost_LIBRARIES})
+target_link_libraries(EconMrsyx undvc_common EvolutionaryAlgorithms SynchronousAlgorithms undvc_common ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
 
 add_subdirectory(multi_objective)
 
 add_executable(Elasticities elasticities)
-target_link_libraries(Elasticities multi_objective EvolutionaryAlgorithms SynchronousAlgorithms undvc_common ${Boost_LIBRARIES})
+target_link_libraries(Elasticities multi_objective EvolutionaryAlgorithms SynchronousAlgorithms undvc_common ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
