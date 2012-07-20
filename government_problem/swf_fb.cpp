@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "formulas.h"
 #include "math.h"
 
 double swf_fb(double cleanprice, double dirtyprice, double wage_h, double wage_l, double pop_h, double pop_l, double time_endowment, double tot_inch, double tot_incl, double ag_exph, double ag_expl, double mu, double A_1, double A_2, double A_3, double B_1, double B_2, double B_3, double a, double b, double c, double eta) {

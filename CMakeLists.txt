@@ -36,5 +36,7 @@ add_subdirectory(multi_objective)
 add_executable(Elasticities elasticities)
 target_link_libraries(Elasticities multi_objective EvolutionaryAlgorithms SynchronousAlgorithms undvc_common ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
 
-#add_subdirectory(government_problem)
-#target_link_libraries(SecondStage government_problem EvolutionaryAlgorithms SynchronousALgorithms undvc_common ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+add_subdirectory(government_problem)
+
+add_executable(SecondStage second_stage)
+target_link_libraries(SecondStage government_problem EvolutionaryAlgorithms SynchronousAlgorithms undvc_common ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
