@@ -78,54 +78,7 @@ double objective_function(const vector<double> &A) {
 	double B_2 = A[4];
 	double B_3 = A[5];
 
-    /* mux_v > 0 */
-    /* muy_v > 0 */
-    /* mul_v > 0 */
-    double mux_v = mux(cleangood, dirtygood, leisuregood, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c);
-    double muy_v = muy(cleangood, dirtygood, leisuregood, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c);
-    double mul_v = mul(cleangood, dirtygood, leisuregood, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c);
 
-     if (mux_v > 0) success_count++; f -= penalty_leq(0, mux_v);
-     if (muy_v > 0) success_count++; f -= penalty_leq(0, muy_v);
-     if (mul_v > 0) success_count++; f -= penalty_leq(0, mul_v);
-
-    /* Elasticity Criteria: */
-    double elastxp = dxdp(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( cleanprice / cleangood );        /* -1 < elastxp < 0; */
-    double elastxq = dxdq(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( dirtyprice / cleangood );        /* abs val ( elastxq ) < 1; */
-    double elastxw = dxdw(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( netwage / cleangood);            /* abs val ( elastxw ) < 1; */
-
-     if (-2 < elastxp && elastxp < 0) success_count++; f -= penalty_out_inclusive(-1, 0, elastxp);
-     if (-2 < elastxq && elastxq < 2) success_count++; f -= penalty_out_inclusive(-1, 1, elastxq);
-     if (-2 < elastxw && elastxw < 2) success_count++; f -= penalty_out_inclusive(-1, 1, elastxw);
-
-    double elastyp = dydp(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( cleanprice / dirtygood );        /* abs val ( elastyp ) < 1; */
-    double elastyq = dydq(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( dirtyprice / dirtygood );        /* -1 < elastyq < 0; */
-    double elastyw = dydw(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( netwage / dirtygood );           /* abs val ( elastyw ) < 1; */
-
-     if (-2 < elastyp && elastyp < 2) success_count++; f -= penalty_out_inclusive(-1, 1, elastyp);
-     if (-2 < elastyq && elastyq < 0) success_count++; f -= penalty_out_inclusive(-1, 0, elastyq);
-     if (-2 < elastyw && elastyw < 2) success_count++; f -= penalty_out_inclusive(-1, 1, elastyw);
-
-    double elastlp = dldp(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( cleanprice / leisuregood );      /* abs val ( elastlp ) < 1; */
-    double elastlq = dldq(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( dirtyprice / leisuregood );      /* abs val ( elastlq ) < 1; */
-    double elastlw = dldw(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( netwage / leisuregood );         /* abs val ( elastlw ) < 1; */
-
-     if (-2 < elastlp && elastlp < 2) success_count++; f -= penalty_out_inclusive(-1, 1, elastlp);
-     if (-2 < elastlq && elastlq < 2) success_count++; f -= penalty_out_inclusive(-1, 1, elastlq);
-     if (-2 < elastlw && elastlw < 2) success_count++; f -= penalty_out_inclusive(-1, 1, elastlw);
-
-    double etax = dxdI(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( total_income / cleangood );       /* 0 < etax > 2; */
-    double etay = dydI(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( total_income / dirtygood );       /* 0 < etay > 2; */
-    double etal = dldI(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( total_income / leisuregood );     /* 0 < etal > 2; */
-
-     if (0 < etax && etax < 2.5) success_count++; f -= penalty_out_inclusive(0, 2, etax);
-     if (0 < etay && etay < 2.5) success_count++; f -= penalty_out_inclusive(0, 2, etay);
-     if (0 < etal && etal < 2.5) success_count++; f -= penalty_out_inclusive(0, 2, etal);
-
-    /* report minor 2, minor 3, minor 4 */
-    double minor2_v = minor2(cleangood, dirtygood, leisuregood, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c);
-    double minor3_v = minor3(cleangood, dirtygood, leisuregood, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c);
-    double minor4_v = minor4(cleangood, dirtygood, leisuregood, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c);
 
 
     if (success_count >= 14 && f > -0.01) {
@@ -134,77 +87,6 @@ double objective_function(const vector<double> &A) {
 
     return f;
 }
-
-double objective_function_verbose(const vector<double> &A) {
-    double f = 0;
-    vector<bool> success;
-    vector<double> penalties;
-
-	double A_1 = A[0];
-	double A_2 = A[1];
-	double A_3 = A[2];
-	double B_1 = A[3];
-	double B_2 = A[4];
-	double B_3 = A[5];
-
-    /* mux_v > 0 */
-    /* muy_v > 0 */
-    /* mul_v > 0 */
-    double mux_v = mux(cleangood, dirtygood, leisuregood, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c);
-    double muy_v = muy(cleangood, dirtygood, leisuregood, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c);
-    double mul_v = mul(cleangood, dirtygood, leisuregood, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c);
-
-    success.push_back(mux_v > 0); penalties.push_back(penalty_leq(0, mux_v));
-    success.push_back(muy_v > 0); penalties.push_back(penalty_leq(0, muy_v));
-    success.push_back(mul_v > 0); penalties.push_back(penalty_leq(0, mul_v));
-
-    /* Elasticity Criteria: */
-    double elastxp = dxdp(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( cleanprice / cleangood );        /* -1 < elastxp < 0; */
-    double elastxq = dxdq(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( dirtyprice / cleangood );        /* abs val ( elastxq ) < 1; */
-    double elastxw = dxdw(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( netwage / cleangood);            /* abs val ( elastxw ) < 1; */
-
-    success.push_back(-1 < elastxp && elastxp < 0); penalties.push_back(penalty_out_inclusive(-1, 0, elastxp));
-    success.push_back(-1 < elastxq && elastxq < 1); penalties.push_back(penalty_out_inclusive(-1, 1, elastxq));
-    success.push_back(-1 < elastxw && elastxw < 1); penalties.push_back(penalty_out_inclusive(-1, 1, elastxw));
-
-    double elastyp = dydp(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( cleanprice / dirtygood );        /* abs val ( elastyp ) < 1; */
-    double elastyq = dydq(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( dirtyprice / dirtygood );        /* -1 < elastyq < 0; */
-    double elastyw = dydw(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( netwage / dirtygood );           /* abs val ( elastyw ) < 1; */
-
-    success.push_back(-1 < elastyp && elastyp < 1); penalties.push_back(penalty_out_inclusive(-1, 1, elastyp));
-    success.push_back(-1 < elastyq && elastyq < 0); penalties.push_back(penalty_out_inclusive(-1, 0, elastyq));
-    success.push_back(-1 < elastyw && elastyw < 1); penalties.push_back(penalty_out_inclusive(-1, 1, elastyw));
-
-    double elastlp = dldp(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( cleanprice / leisuregood );      /* abs val ( elastlp ) < 1; */
-    double elastlq = dldq(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( dirtyprice / leisuregood );      /* abs val ( elastlq ) < 1; */
-    double elastlw = dldw(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( netwage / leisuregood );         /* abs val ( elastlw ) < 1; */
-
-    success.push_back(-1 < elastlp && elastlp < 1); penalties.push_back(penalty_out_inclusive(-1, 1, elastlp));
-    success.push_back(-1 < elastlq && elastlq < 1); penalties.push_back(penalty_out_inclusive(-1, 1, elastlq));
-    success.push_back(-1 < elastlw && elastlw < 1); penalties.push_back(penalty_out_inclusive(-1, 1, elastlw));
-
-    double etax = dxdI(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( total_income / cleangood );       /* 0 < etax > 2; */
-    double etay = dydI(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( total_income / dirtygood );       /* 0 < etay > 2; */
-    double etal = dldI(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( total_income / leisuregood );     /* 0 < etal > 2; */
-
-    success.push_back(0 < etax && etax < 2); penalties.push_back(penalty_out_inclusive(0, 2, etax));
-    success.push_back(0 < etay && etay < 2); penalties.push_back(penalty_out_inclusive(0, 2, etay));
-    success.push_back(0 < etal && etal < 2); penalties.push_back(penalty_out_inclusive(0, 2, etal));
-
-    /* report minor 2, minor 3, minor 4 */
-    double minor2_v = minor2(cleangood, dirtygood, leisuregood, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c);
-    double minor3_v = minor3(cleangood, dirtygood, leisuregood, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c);
-    double minor4_v = minor4(cleangood, dirtygood, leisuregood, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c);
-
-    cout << "success:   " << vector_to_string(success) << endl;
-    cout << "penalties: " << vector_to_string(penalties) << endl;
-
-    cout << "fitness, mux, muy, mul, elastxp, elastxq, elastxw, elastyp, elastyq, elastyw, elastlp, elastlq, elastlw, etax, etay, etal, minor2, minor3, minor4, A_1, A_2, A_3, B_1, B_2, B_3" << endl;
-    cout << f << ", " << mux_v << ", " << muy_v << ", " << mul_v << ", " << elastxp << ", " << elastxq << ", " << elastxw << ", " << elastyp << ", " << elastyq << ", " << elastyw << ", " << elastlp << ", " << elastlq << ", " << elastlw << ", " << etax << ", " << etay << ", " << etal << ", " << minor2_v << ", " << minor3_v << ", " << minor4_v << ", " << A[0] << ", " << A[1] << ", " << A[2] << A[3] << ", " << A[4] << ", " << A[5] << ", " << endl;
-
-    return f;
-}
-
 
 
 int main(int number_arguments, char **argv) {

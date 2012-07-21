@@ -7,6 +7,6 @@ When compiling on windows:
 
 mkdir build
 cd build
-cmake .. -G "Visual Studio 10 Win64"
+cmake .. -G "Visual Studio 10"
 
 To specify 64 bit compilation (you need to make sure the installed boost architecture is the same here).
