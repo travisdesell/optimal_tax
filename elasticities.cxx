@@ -94,33 +94,33 @@ double objective_function(const vector<double> &A, uint64_t iteration) {
     double elastxq = dxdq(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( dirtyprice / cleangood );        /* abs val ( elastxq ) < 1; */
     double elastxw = dxdw(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( netwage / cleangood);            /* abs val ( elastxw ) < 1; */
 
-     if (-1.5 < elastxp && elastxp < 0) success_count++; f -= penalty_out_inclusive(-1.5, 0, elastxp);
-     if (-1 < elastxq && elastxq < 1) success_count++; f -= penalty_out_inclusive(-1, 1, elastxq);
-     if (-1.5 < elastxw && elastxw < 1.5) success_count++; f -= penalty_out_inclusive(-1.5, 1.5, elastxw);
+     if (-1.25 < elastxp && elastxp < -0.50) success_count++; f -= penalty_out_inclusive(-1.25, -0.50, elastxp);
+     if (-1.00 < elastxq && elastxq < 1.00) success_count++; f -= penalty_out_inclusive(-1.00, 1.00, elastxq);
+     if (-1.25 < elastxw && elastxw < 1.25) success_count++; f -= penalty_out_inclusive(-1.25, 1.25, elastxw);
 
     double elastyp = dydp(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( cleanprice / dirtygood );        /* abs val ( elastyp ) < 1; */
     double elastyq = dydq(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( dirtyprice / dirtygood );        /* -1 < elastyq < 0; */
     double elastyw = dydw(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( netwage / dirtygood );           /* abs val ( elastyw ) < 1; */
 
-     if (-1.5 < elastyp && elastyp < 1.5) success_count++; f -= penalty_out_inclusive(-1.5, 1.5, elastyp);
-     if (-1.5 < elastyq && elastyq < 0) success_count++; f -= penalty_out_inclusive(-1.5, 0, elastyq);
-     if (-1.5 < elastyw && elastyw < 1.5) success_count++; f -= penalty_out_inclusive(-1.5, 1.5, elastyw);
+     if (-1.00 < elastyp && elastyp < 1.00) success_count++; f -= penalty_out_inclusive(-1.00, 1.00, elastyp);
+     if (-1.00 < elastyq && elastyq < -0.20) success_count++; f -= penalty_out_inclusive(-1.00, -0.20, elastyq);
+     if (-1.25 < elastyw && elastyw < 1.25) success_count++; f -= penalty_out_inclusive(-1.25, 1.25, elastyw);
 
     double elastlp = dldp(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( cleanprice / leisuregood );      /* abs val ( elastlp ) < 1; */
     double elastlq = dldq(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( dirtyprice / leisuregood );      /* abs val ( elastlq ) < 1; */
     double elastlw = dldw(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( netwage / leisuregood );         /* abs val ( elastlw ) < 1; */
 
-     if (-1 < elastlp && elastlp < 1) success_count++; f -= penalty_out_inclusive(-1, 1, elastlp);
-     if (-1 < elastlq && elastlq < 1) success_count++; f -= penalty_out_inclusive(-1, 1, elastlq);
-     if (-1 < elastlw && elastlw < 1) success_count++; f -= penalty_out_inclusive(-1, 1, elastlw);
+     if (-0.50 < elastlp && elastlp < 0.50) success_count++; f -= penalty_out_inclusive(-0.50, 0.50, elastlp);
+     if (-0.50 < elastlq && elastlq < 0.50) success_count++; f -= penalty_out_inclusive(-0.50, 0.50, elastlq);
+     if (-0.25 < elastlw && elastlw < 0.25) success_count++; f -= penalty_out_inclusive(-0.25, 0.25, elastlw);
 
     double etax = dxdI(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( total_income / cleangood );       /* 0 < etax > 2; */
     double etay = dydI(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( total_income / dirtygood );       /* 0 < etay > 2; */
     double etal = dldI(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( total_income / leisuregood );     /* 0 < etal > 2; */
 
-     if (0 < etax && etax < 2) success_count++; f -= penalty_out_inclusive(0, 2, etax);
-     if (0 < etay && etay < 1) success_count++; f -= penalty_out_inclusive(0, 1, etay);
-     if (0 < etal && etal < 1.5) success_count++; f -= penalty_out_inclusive(0, 1.5, etal);
+     if (0.50 < etax && etax < 1.75) success_count++; f -= penalty_out_inclusive(0.50, 1.75, etax);
+     if (0.20 < etay && etay < 1.00) success_count++; f -= penalty_out_inclusive(0.20, 1.00, etay);
+     if (0.20 < etal && etal < 1.25) success_count++; f -= penalty_out_inclusive(0.20, 1.25, etal);
 
     /* report minor 2, minor 3, minor 4 */
     double minor2_v = minor2(cleangood, dirtygood, leisuregood, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c);
@@ -162,33 +162,33 @@ double objective_function2(const vector<double> &A) {
     double elastxq = dxdq(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( dirtyprice / cleangood );        /* abs val ( elastxq ) < 1; */
     double elastxw = dxdw(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( netwage / cleangood);            /* abs val ( elastxw ) < 1; */
 
-     if (-1.5 < elastxp && elastxp < 0) success_count++; f -= penalty_out_inclusive(-1.5, 0, elastxp);
-     if (-1 < elastxq && elastxq < 1) success_count++; f -= penalty_out_inclusive(-1, 1, elastxq);
-     if (-1.5 < elastxw && elastxw < 1.5) success_count++; f -= penalty_out_inclusive(-1.5, 1.5, elastxw);
+     if (-1.25 < elastxp && elastxp < -0.50) success_count++; f -= penalty_out_inclusive(-1.25, -0.50, elastxp);
+     if (-1.00 < elastxq && elastxq < 1.00) success_count++; f -= penalty_out_inclusive(-1.00, 1.00, elastxq);
+     if (-1.25 < elastxw && elastxw < 1.25) success_count++; f -= penalty_out_inclusive(-1.25, 1.25, elastxw);
 
     double elastyp = dydp(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( cleanprice / dirtygood );        /* abs val ( elastyp ) < 1; */
     double elastyq = dydq(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( dirtyprice / dirtygood );        /* -1 < elastyq < 0; */
     double elastyw = dydw(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( netwage / dirtygood );           /* abs val ( elastyw ) < 1; */
 
-     if (-1.5 < elastyp && elastyp < 1.5) success_count++; f -= penalty_out_inclusive(-1.5, 1.5, elastyp);
-     if (-1.5 < elastyq && elastyq < 0) success_count++; f -= penalty_out_inclusive(-1.5, 0, elastyq);
-     if (-1.5 < elastyw && elastyw < 1.5) success_count++; f -= penalty_out_inclusive(-1.5, 1.5, elastyw);
+     if (-1.00 < elastyp && elastyp < 1.00) success_count++; f -= penalty_out_inclusive(-1.00, 1.00, elastyp);
+     if (-1.00 < elastyq && elastyq < -0.20) success_count++; f -= penalty_out_inclusive(-1.00, -0.20, elastyq);
+     if (-1.25 < elastyw && elastyw < 1.25) success_count++; f -= penalty_out_inclusive(-1.25, 1.25, elastyw);
 
     double elastlp = dldp(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( cleanprice / leisuregood );      /* abs val ( elastlp ) < 1; */
     double elastlq = dldq(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( dirtyprice / leisuregood );      /* abs val ( elastlq ) < 1; */
     double elastlw = dldw(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( netwage / leisuregood );         /* abs val ( elastlw ) < 1; */
 
-     if (-1 < elastlp && elastlp < 1) success_count++; f -= penalty_out_inclusive(-1, 1, elastlp);
-     if (-1 < elastlq && elastlq < 1) success_count++; f -= penalty_out_inclusive(-1, 1, elastlq);
-     if (-1 < elastlw && elastlw < 1) success_count++; f -= penalty_out_inclusive(-1, 1, elastlw);
+     if (-0.50 < elastlp && elastlp < 0.50) success_count++; f -= penalty_out_inclusive(-0.50, 0.50, elastlp);
+     if (-0.50 < elastlq && elastlq < 0.50) success_count++; f -= penalty_out_inclusive(-0.50, 0.50, elastlq);
+     if (-0.25 < elastlw && elastlw < 0.25) success_count++; f -= penalty_out_inclusive(-0.25, 0.25, elastlw);
 
     double etax = dxdI(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( total_income / cleangood );       /* 0 < etax > 2; */
     double etay = dydI(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( total_income / dirtygood );       /* 0 < etay > 2; */
     double etal = dldI(cleanprice, dirtyprice, netwage, time_endowment, virtual_inc, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) * ( total_income / leisuregood );     /* 0 < etal > 2; */
 
-     if (0 < etax && etax < 2) success_count++; f -= penalty_out_inclusive(0, 2, etax);
-     if (0 < etay && etay < 1) success_count++; f -= penalty_out_inclusive(0, 1, etay);
-     if (0 < etal && etal < 1.5) success_count++; f -= penalty_out_inclusive(0, 1.5, etal);
+     if (0.50 < etax && etax < 1.75) success_count++; f -= penalty_out_inclusive(0.50, 1.75, etax);
+     if (0.20 < etay && etay < 1.00) success_count++; f -= penalty_out_inclusive(0.20, 1.00, etay);
+     if (0.20 < etal && etal < 1.25) success_count++; f -= penalty_out_inclusive(0.20, 1.25, etal);
 
     /* report minor 2, minor 3, minor 4 */
     double minor2_v = minor2(cleangood, dirtygood, leisuregood, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c);
@@ -249,12 +249,12 @@ int main(int number_arguments, char **argv) {
 
     } else if (search_type.compare("sweep") == 0) {
         vector<double> step_size(6, 0);
-        step_size[0] = 1.00;
-        step_size[1] = 1.00;
-        step_size[2] = 1.00;
-		step_size[3] = 1.00;
-		step_size[4] = 1.00;
-		step_size[5] = 1.00;
+        step_size[0] = 0.10;
+        step_size[1] = 0.10;
+        step_size[2] = 0.10;
+		step_size[3] = 0.10;
+		step_size[4] = 0.10;
+		step_size[5] = 0.10;
 
         parameter_sweep(min_bound, max_bound, step_size, objective_function);
 
