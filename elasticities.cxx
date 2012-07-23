@@ -20,9 +20,7 @@
 
 using namespace std;
 
-/**
- *  The following parameters are constant.
- */
+/* The following parameters are constant. */
 double a = 67.98208;
 double b = 7.113661;
 double c = 30;
@@ -39,15 +37,18 @@ double total_income = 709.7757;
 
 double constraint_penalty = 0.0001;
 
+/* Iteration Count Variable For Parameter Sweep */
+uint64_t iteration_count = 0;
+
 ofstream *output_csv;
 
-/* Calculate a penalty for being less than or equal to the bound given*/
+/* Calculate a penalty for being less than or equal to the bound given. */
 double penalty_leq(double max, double value) {
     if (value <= max) return constraint_penalty + (max - value);
     return 0;
 }
 
-/* Calculate a penalty for being inside the bounds given */
+/* Calculate a penalty for being inside the bounds given. */
 double penalty_in_inclusive(double min, double max, double value) {
     if (value >= min && value <= max) {
         double diff_min = value - min;  /* difference from the min value */
@@ -70,7 +71,6 @@ double penalty_out_inclusive(double min, double max, double value) {
 double objective_function(const vector<double> &A) {
     double f = 0;
     uint32_t success_count = 0;
-	uint64_t iteration_count = 0;
 
 	double A_1 = A[0];
 	double A_2 = A[1];
@@ -130,9 +130,9 @@ double objective_function(const vector<double> &A) {
 
 
     if (success_count >= 14 && f > -0.01) {
-		iteration_count++;
-        (*output_csv) << iteration_count << ", " << A[0] << ", " << A[1] << ", " << A[2] << ", " << A[3] << ", " << A[4] << ", " << A[5] << ", " << success_count << ", " << f << ", " << mux_v << ", " << muy_v << ", " << mul_v << ", " << elastxp << ", " << elastxq << ", " << elastxw << ", " << elastyp << ", " << elastyq << ", " << elastyw << ", " << elastlp << ", " << elastlq << ", " << elastlw << ", " << etax << ", " << etay << ", " << etal << ", " << minor2_v << ", " << minor3_v << ", " << minor4_v << endl;
+		(*output_csv) << iteration_count << ", " << A[0] << ", " << A[1] << ", " << A[2] << ", " << A[3] << ", " << A[4] << ", " << A[5] << ", " << success_count << ", " << f << ", " << mux_v << ", " << muy_v << ", " << mul_v << ", " << elastxp << ", " << elastxq << ", " << elastxw << ", " << elastyp << ", " << elastyq << ", " << elastyw << ", " << elastlp << ", " << elastlq << ", " << elastlw << ", " << etax << ", " << etay << ", " << etal << ", " << minor2_v << ", " << minor3_v << ", " << minor4_v << endl;
     }
+	iteration_count++;
 
     return f;
 }
