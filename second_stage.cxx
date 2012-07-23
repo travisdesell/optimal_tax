@@ -16,26 +16,31 @@
 #include "tao/undvc_common/arguments.hxx"
 #include "tao/undvc_common/vector_io.hxx"
 
-#include "multi_objective/stdafx.h"
+#include "government_problem/stdafx.h"
 
 using namespace std;
 
 /**
  *  The following parameters are constant.
  */
+double A_1 = 2.00;
+double A_2 = 2.00;
+double A_3 = 2.00;
+double B_1 = 2.00;
+double B_2 = 2.00;
+double B_3 = 2.00;
 double a = 67.98208;
 double b = 7.113661;
 double c = 30;
 
-double cleanprice = 1.687429;
-double dirtyprice = 1.072984;
-double netwage = 7.478338;
-double cleangood = 202.8819;
-double dirtygood = 23.98821;
-double leisuregood = 47.05382;
+double cleanprice = 1;
+double dirtyprice = 1;
+double wage_h = 8.00;
+double wage_l = 8.00;
+double pop_h = 0.50;
+double pop_l = 0.50;
 double time_endowment = 80;
-double virtual_inc = 111.5087;
-double total_income = 709.7757;
+double eta = 0.10;
 
 double constraint_penalty = 0.0001;
 
@@ -71,46 +76,62 @@ double objective_function(const vector<double> &A) {
     double f = 0;
     uint32_t success_count = 0;
 
-	double A_1 = A[0];
-	double A_2 = A[1];
-	double A_3 = A[2];
-	double B_1 = A[3];
-	double B_2 = A[4];
-	double B_3 = A[5];
+	double tot_inch = A[0];
+	double tot_incl = A[1];
+	double ag_exph = A[2];
+	double ag_expl = A[3];
+	double mu = A[4];
 
+	double term_h = pop_h * pow(indirectutility(cleanprice, dirtyprice, wage_h, time_endowment, tot_inch, ag_exph, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c), 1-eta);
+	double term_l = pop_l * pow(indirectutility(cleanprice, dirtyprice, wage_l, time_endowment, tot_incl, ag_expl, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c), 1-eta);
 
+	double term_bc = ( pop_h * ( tot_inch - ag_exph ) ) + ( pop_l * ( tot_incl - ag_expl ) ) - 93;
 
+	f = ( 1 / ( 1 - eta ) ) * ( term_h + term_l ) + ( mu * term_bc );
 
-    if (success_count >= 14 && f > -0.01) {
-        (*output_csv) << A[0] << ", " << A[1] << ", " << A[2] << ", " << A[3] << ", " << A[4] << ", " << A[5] << ", " << success_count << ", " << f << ", " << mux_v << ", " << muy_v << ", " << mul_v << ", " << elastxp << ", " << elastxq << ", " << elastxw << ", " << elastyp << ", " << elastyq << ", " << elastyw << ", " << elastlp << ", " << elastlq << ", " << elastlw << ", " << etax << ", " << etay << ", " << etal << ", " << minor2_v << ", " << minor3_v << ", " << minor4_v << endl;
-    }
-
-    return f;
+	(*output_csv) << A[0] << ", " << A[1] << ", " << A[2] << ", " << A[3] << ", " << A[4] << endl;
+	return f;
 }
+
+void check_solution(double tot_inch, double tot_incl, double ag_exph, double ag_expl, double mu) {
+	double focinchval = foc_inc(cleanprice, dirtyprice, wage_h, pop_h, time_endowment, tot_inch, ag_exph, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta); 
+	double focinclval = foc_inc(cleanprice, dirtyprice, wage_l, pop_l, time_endowment, tot_incl, ag_expl, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta); 
+	
+	double focexphval = foc_exp(cleanprice, dirtyprice, wage_h, pop_h, time_endowment, tot_inch, ag_exph, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta);
+	double focexplval = foc_exp(cleanprice, dirtyprice, wage_l, pop_l, time_endowment, tot_incl, ag_expl, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta);
+
+	double bgtcnstval = bgtcnst(pop_h, pop_l, tot_inch, tot_incl, ag_exph, ag_expl);
+
+	double tot_inch2 = tot_inch - 1;
+	double tot_incl2 = tot_incl + 1;
+	double ag_exph2 = ag_exph - 1;
+	double ag_expl2 = ag_expl - 1;
+
+	double checkwelfare = swf_fb(cleanprice, dirtyprice, wage_h, wage_l, pop_h, pop_l, time_endowment, tot_inch, tot_incl, ag_exph, ag_expl, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta);
+}
+
 
 
 int main(int number_arguments, char **argv) {
     vector<string> arguments(argv, argv + number_arguments);
 
-    output_csv = new ofstream("elasticities_sweep.txt");
-    (*output_csv) << "A_1, A_2, A_3, B_1, B_2, B_3, passed_constraints, fitness, mux, muy, mul, elastxp, elastxq, elastxw, elastyp, elastyq, elastyw, elastlp, elastlq, elastlw, etax, etay, etal, minor2, minor3, minor4" << endl;
+	output_csv = new ofstream("First-Best Problem");
+	(*output_csv) << "Inc_High, Inc_Low, Exp_High, Exp_Low, mu, fitness" << endl;
 
-    int number_parameters = 6;
+    int number_parameters = 5;
     vector<double> min_bound(number_parameters, 0);
     vector<double> max_bound(number_parameters, 0);
 
-    min_bound[0] = -3.0;
-    max_bound[0] = 3.0;
-    min_bound[1] = -3.0;
-    max_bound[1] = 3.0;
-    min_bound[2] = -3.0;
-    max_bound[2] = 3.0;
-	min_bound[3] = -3.0;
-	max_bound[3] = 3.0;
-	min_bound[4] = -3.0;
-	max_bound[4] = 3.0;
-	min_bound[5] = -3.0;
-	max_bound[5] = 3.0;
+    min_bound[0] = 0;
+    max_bound[0] = 800;
+    min_bound[1] = 0;
+    max_bound[1] = 800;
+    min_bound[2] = 0;
+    max_bound[2] = 800;
+	min_bound[3] = -0;
+	max_bound[3] = 800;
+	min_bound[4] = 0;
+	max_bound[4] = 10;
 
     string search_type;
     if (!get_argument(arguments, "--search_type", false, search_type)) {
@@ -121,7 +142,7 @@ int main(int number_arguments, char **argv) {
         fprintf(stderr, "    snm    -       synchronous newton method\n");
         fprintf(stderr, "    gd     -       gradient descent\n");
         fprintf(stderr, "    cgd    -       conjugate gradient descent\n");
-		fprintf(stderr, "    sweep  -       parameter sweep\n");
+//		fprintf(stderr, "    sweep  -       parameter sweep\n");
 		exit(0);
 	}
 
@@ -133,7 +154,7 @@ int main(int number_arguments, char **argv) {
         DifferentialEvolution de(min_bound, max_bound, arguments);
         de.iterate(objective_function);
 
-    } else if (search_type.compare("sweep") == 0) {
+    }/* else if (search_type.compare("sweep") == 0) {
         vector<double> step_size(6, 0);
         step_size[0] = 1.00;
         step_size[1] = 1.00;
@@ -144,7 +165,7 @@ int main(int number_arguments, char **argv) {
 
         parameter_sweep(min_bound, max_bound, step_size, objective_function);
 
-    } else if (search_type.compare("snm") == 0 || search_type.compare("gd") == 0 || search_type.compare("cgd") == 0) {
+    }*/ else if (search_type.compare("snm") == 0 || search_type.compare("gd") == 0 || search_type.compare("cgd") == 0) {
 		vector<double> starting_point(3, 0);
 
 #ifdef _MSC_VER
