@@ -130,9 +130,9 @@ double objective_function(const vector<double> &A) {
 
 
     if (success_count >= 14 && f > -0.01) {
+		iteration_count++;
 		(*output_csv) << iteration_count << ", " << A[0] << ", " << A[1] << ", " << A[2] << ", " << A[3] << ", " << A[4] << ", " << A[5] << ", " << success_count << ", " << f << ", " << mux_v << ", " << muy_v << ", " << mul_v << ", " << elastxp << ", " << elastxq << ", " << elastxw << ", " << elastyp << ", " << elastyq << ", " << elastyw << ", " << elastlp << ", " << elastlq << ", " << elastlw << ", " << etax << ", " << etay << ", " << etal << ", " << minor2_v << ", " << minor3_v << ", " << minor4_v << endl;
     }
-	iteration_count++;
 
     return f;
 }
@@ -183,12 +183,12 @@ int main(int number_arguments, char **argv) {
 
     } else if (search_type.compare("sweep") == 0) {
         vector<double> step_size(6, 0);
-        step_size[0] = 1.00;
-        step_size[1] = 1.00;
-        step_size[2] = 1.00;
-		step_size[3] = 1.00;
-		step_size[4] = 1.00;
-		step_size[5] = 1.00;
+        step_size[0] = 0.10;
+        step_size[1] = 0.10;
+        step_size[2] = 0.10;
+		step_size[3] = 0.10;
+		step_size[4] = 0.10;
+		step_size[5] = 0.10;
 
         parameter_sweep(min_bound, max_bound, step_size, objective_function);
 
