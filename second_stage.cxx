@@ -33,15 +33,16 @@ double a = 67.98208;
 double b = 7.113661;
 double c = 30;
 
+/* Updated 07/23/2012 */
 double cleanprice = 1;
 double dirtyprice = 1;
-double wage_h = 8.00;
-double wage_l = 8.00;
-double pop_h = 0.50;
-double pop_l = 0.50;
+double wage_h = 16.0696;
+double wage_l = 10.4980;
+double pop_h = 0.40;
+double pop_l = 0.60;
 double time_endowment = 80;
 double eta = 0.10;
-
+double revenue = 126.79;
 double constraint_penalty = 0.0001;
 
 ofstream *output_csv;
@@ -85,11 +86,9 @@ double objective_function(const vector<double> &A) {
 	double term_h = pop_h * pow(indirectutility(cleanprice, dirtyprice, wage_h, time_endowment, tot_inch, ag_exph, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c), 1-eta);
 	double term_l = pop_l * pow(indirectutility(cleanprice, dirtyprice, wage_l, time_endowment, tot_incl, ag_expl, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c), 1-eta);
 
-	double term_bc = ( pop_h * ( tot_inch - ag_exph ) ) + ( pop_l * ( tot_incl - ag_expl ) ) - 93;
+	double term_bc = ( pop_h * ( tot_inch - ag_exph ) ) + ( pop_l * ( tot_incl - ag_expl ) ) - revenue;
 
 	f = ( 1 / ( 1 - eta ) ) * ( term_h + term_l ) + ( mu * term_bc );
-
-	(*output_csv) << A[0] << ", " << A[1] << ", " << A[2] << ", " << A[3] << ", " << A[4] << endl;
 	return f;
 }
 
@@ -105,9 +104,12 @@ void check_solution(double tot_inch, double tot_incl, double ag_exph, double ag_
 	double tot_inch2 = tot_inch - 1;
 	double tot_incl2 = tot_incl + 1;
 	double ag_exph2 = ag_exph - 1;
-	double ag_expl2 = ag_expl - 1;
+	double ag_expl2 = ag_expl + 1;
 
-	double checkwelfare = swf_fb(cleanprice, dirtyprice, wage_h, wage_l, pop_h, pop_l, time_endowment, tot_inch, tot_incl, ag_exph, ag_expl, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta);
+	double welfare = swf_fb(cleanprice, dirtyprice, wage_h, wage_l, pop_h, pop_l, time_endowment, tot_inch, tot_incl, ag_exph, ag_expl, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta);
+	double checkwelfare = swf_fb(cleanprice, dirtyprice, wage_h, wage_l, pop_h, pop_l, time_endowment, tot_inch2, tot_incl2, ag_exph2, ag_expl2, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta);
+
+	(*output_csv) << tot_inch << ", " << tot_incl << ", " << ag_exph << ", " << ag_expl << ", " << mu << ", " << welfare << ", " << focinchval << ", " << focinclval << ", " << focexphval << ", " << focexplval << ", " << bgtcnstval << ", " << checkwelfare << endl;
 }
 
 
@@ -115,8 +117,8 @@ void check_solution(double tot_inch, double tot_incl, double ag_exph, double ag_
 int main(int number_arguments, char **argv) {
     vector<string> arguments(argv, argv + number_arguments);
 
-	output_csv = new ofstream("First-Best Problem");
-	(*output_csv) << "Inc_High, Inc_Low, Exp_High, Exp_Low, mu, fitness" << endl;
+	output_csv = new ofstream("First-Best Problem.txt");
+	(*output_csv) << "Inc_High, Inc_Low, Exp_High, Exp_Low, mu, Welfare, FOC_Inc_H, FOC_Inc_L, FOC_Exp_H, FOC_Exp_L, Bgt Cnst, Welfare2" << endl;
 
     int number_parameters = 5;
     vector<double> min_bound(number_parameters, 0);
@@ -142,7 +144,8 @@ int main(int number_arguments, char **argv) {
         fprintf(stderr, "    snm    -       synchronous newton method\n");
         fprintf(stderr, "    gd     -       gradient descent\n");
         fprintf(stderr, "    cgd    -       conjugate gradient descent\n");
-//		fprintf(stderr, "    sweep  -       parameter sweep\n");
+		fprintf(stderr, "    sweep  -       parameter sweep\n");
+		fprintf(stderr, "    check  -		check solution\n");
 		exit(0);
 	}
 
@@ -154,18 +157,17 @@ int main(int number_arguments, char **argv) {
         DifferentialEvolution de(min_bound, max_bound, arguments);
         de.iterate(objective_function);
 
-    }/* else if (search_type.compare("sweep") == 0) {
-        vector<double> step_size(6, 0);
-        step_size[0] = 1.00;
-        step_size[1] = 1.00;
-        step_size[2] = 1.00;
-		step_size[3] = 1.00;
-		step_size[4] = 1.00;
-		step_size[5] = 1.00;
+    } else if (search_type.compare("sweep") == 0) {
+        vector<double> step_size(5, 0);
+        step_size[0] = 50;
+        step_size[1] = 50;
+        step_size[2] = 10;
+		step_size[3] = 10;
+		step_size[4] = 0.05;
 
         parameter_sweep(min_bound, max_bound, step_size, objective_function);
 
-    }*/ else if (search_type.compare("snm") == 0 || search_type.compare("gd") == 0 || search_type.compare("cgd") == 0) {
+    } else if (search_type.compare("snm") == 0 || search_type.compare("gd") == 0 || search_type.compare("cgd") == 0) {
 		vector<double> starting_point(3, 0);
 
 #ifdef _MSC_VER
@@ -193,7 +195,18 @@ int main(int number_arguments, char **argv) {
             synchronous_conjugate_gradient_descent(arguments, objective_function, starting_point, step_size);
         }
 
-    } else {
+    } else if (search_type.compare("check") == 0) {
+			double tot_inch;
+			double tot_incl;
+			double ag_exph;
+			double ag_expl;
+			double mu;
+
+			cout << "Enter the following: Total Income (H), Total Income (L), Expenditures (H), Expenditures(L), mu: " << endl;
+			cin >> tot_inch >> tot_incl >> ag_exph >> ag_expl >> mu;
+			check_solution(tot_inch, tot_incl, ag_exph, ag_expl, mu);
+	
+	} else {
         fprintf(stderr, "Improperly specified search type: '%s'\n", search_type.c_str());
         fprintf(stderr, "Possibilities are:\n");
         fprintf(stderr, "    de     -       differential evolution\n");
@@ -202,6 +215,7 @@ int main(int number_arguments, char **argv) {
         fprintf(stderr, "    gd     -       gradient descent\n");
         fprintf(stderr, "    cgd    -       conjugate gradient descent\n");
 		fprintf(stderr, "    sweep  -       parameter sweep\n");
+		fprintf(stderr, "	 check	-		check solution\n");
         exit(0);
     }
 
