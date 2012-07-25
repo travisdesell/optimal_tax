@@ -117,7 +117,10 @@ void check_solution(double tot_inch, double tot_incl, double ag_exph, double ag_
 int main(int number_arguments, char **argv) {
     vector<string> arguments(argv, argv + number_arguments);
 
-	output_csv = new ofstream("First-Best Problem.txt");
+    string output_filename;
+    get_argument(arguments, "--output_filename", true, output_filename);
+
+	output_csv = new ofstream(output_filename.c_str());
 	(*output_csv) << "Inc_High, Inc_Low, Exp_High, Exp_Low, mu, Welfare, FOC_Inc_H, FOC_Inc_L, FOC_Exp_H, FOC_Exp_L, Bgt Cnst, Welfare2" << endl;
 
     int number_parameters = 5;
