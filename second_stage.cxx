@@ -93,10 +93,10 @@ double objective_function(const vector<double> &A) {
         cout << "POINT: " << vector_to_string(A) << endl;
 
         cout << "term_h:  " << term_h << endl;
-        cout << "  indirect_utility: " << indirectutility(cleanprice, dirtyprice, wage_h, time_endowment, tot_incl, ag_exph, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) << endl;
+        cout << "  indirect_utility: " << indirectutility(cleanprice, dirtyprice, wage_h, time_endowment, tot_inch, ag_exph, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) << endl;
         cout << "  1 - eta         : " << (1 - eta) << endl;
         cout << "  pop_h           : " << pop_h << endl;
-        cout << "  pow(indirect_utility, 1 - eta) : " << pow(indirectutility(cleanprice, dirtyprice, wage_h, time_endowment, tot_incl, ag_exph, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c), 1 - eta) << endl;
+        cout << "  pow(indirect_utility, 1 - eta) : " << pow(indirectutility(cleanprice, dirtyprice, wage_h, time_endowment, tot_inch, ag_exph, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c), 1 - eta) << endl;
         cout << "term_l:  " << term_l << endl;
         cout << "  indirect_utility: " << indirectutility(cleanprice, dirtyprice, wage_l, time_endowment, tot_incl, ag_expl, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) << endl;
         cout << "  1 - eta         : " << (1 - eta) << endl;
