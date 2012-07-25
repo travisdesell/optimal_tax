@@ -185,15 +185,15 @@ int main(int number_arguments, char **argv) {
         starting_point[0] = min_bound[0] + ((max_bound[0] - min_bound[0]) * ((double)rand()/(double)RAND_MAX));
         starting_point[1] = min_bound[1] + ((max_bound[1] - min_bound[1]) * ((double)rand()/(double)RAND_MAX));
         starting_point[2] = min_bound[2] + ((max_bound[2] - min_bound[2]) * ((double)rand()/(double)RAND_MAX));
-        starting_point[3] = min_bound[2] + ((max_bound[2] - min_bound[2]) * ((double)rand()/(double)RAND_MAX));
-        starting_point[4] = min_bound[2] + ((max_bound[2] - min_bound[2]) * ((double)rand()/(double)RAND_MAX));
+        starting_point[3] = min_bound[3] + ((max_bound[3] - min_bound[3]) * ((double)rand()/(double)RAND_MAX));
+        starting_point[4] = min_bound[4] + ((max_bound[4] - min_bound[4]) * ((double)rand()/(double)RAND_MAX));
 #else
         srand48(time(NULL));
 		starting_point[0] = min_bound[0] + ((max_bound[0] - min_bound[0]) * drand48());
         starting_point[1] = min_bound[1] + ((max_bound[1] - min_bound[1]) * drand48());
         starting_point[2] = min_bound[2] + ((max_bound[2] - min_bound[2]) * drand48());
-        starting_point[3] = min_bound[2] + ((max_bound[2] - min_bound[2]) * drand48());
-        starting_point[4] = min_bound[2] + ((max_bound[2] - min_bound[2]) * drand48());
+        starting_point[3] = min_bound[3] + ((max_bound[3] - min_bound[3]) * drand48());
+        starting_point[4] = min_bound[4] + ((max_bound[4] - min_bound[4]) * drand48());
 #endif
 
         vector<double> step_size(6, 0);
