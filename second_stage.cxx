@@ -82,12 +82,37 @@ double objective_function(const vector<double> &A) {
 	double ag_expl = A[3];
 	double mu = A[4];
 
-	double term_h = pop_h * pow(indirectutility(cleanprice, dirtyprice, wage_h, time_endowment, tot_inch, ag_exph, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c), 1-eta);
-	double term_l = pop_l * pow(indirectutility(cleanprice, dirtyprice, wage_l, time_endowment, tot_incl, ag_expl, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c), 1-eta);
+    if (ag_exph < tot_inch && ag_expl < tot_incl) {
+        double term_h = pop_h * pow(indirectutility(cleanprice, dirtyprice, wage_h, time_endowment, tot_inch, ag_exph, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c), 1-eta);
+        double term_l = pop_l * pow(indirectutility(cleanprice, dirtyprice, wage_l, time_endowment, tot_incl, ag_expl, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c), 1-eta);
 
-	double term_bc = ( pop_h * ( tot_inch - ag_exph ) ) + ( pop_l * ( tot_incl - ag_expl ) ) - revenue;
+        double term_bc = ( pop_h * ( tot_inch - ag_exph ) ) + ( pop_l * ( tot_incl - ag_expl ) ) - revenue;
 
-	f = ( 1 / ( 1 - eta ) ) * ( term_h + term_l ) + ( mu * term_bc );
+        f = ( 1 / ( 1 - eta ) ) * ( term_h + term_l ) + ( mu * term_bc );
+
+        cout << "POINT: " << vector_to_string(A) << endl;
+
+        cout << "term_h:  " << term_h << endl;
+        cout << "  indirect_utility: " << indirectutility(cleanprice, dirtyprice, wage_h, time_endowment, tot_incl, ag_exph, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) << endl;
+        cout << "  1 - eta         : " << (1 - eta) << endl;
+        cout << "  pop_h           : " << pop_h << endl;
+        cout << "  pow(indirect_utility, 1 - eta) : " << pow(indirectutility(cleanprice, dirtyprice, wage_h, time_endowment, tot_incl, ag_exph, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c), 1 - eta) << endl;
+        cout << "term_l:  " << term_l << endl;
+        cout << "  indirect_utility: " << indirectutility(cleanprice, dirtyprice, wage_l, time_endowment, tot_incl, ag_expl, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) << endl;
+        cout << "  1 - eta         : " << (1 - eta) << endl;
+        cout << "term_bc: " << term_bc << endl;
+        cout << "f:       " << f << endl;
+
+    }
+
+    if (ag_exph > tot_inch) {
+        f -= (ag_exph - tot_inch);
+    }
+
+    if (ag_expl > tot_incl) {
+        f -= (ag_expl - tot_incl);
+    }
+
 	return f;
 }
 
@@ -125,8 +150,26 @@ int main(int number_arguments, char **argv) {
 
 	output_csv = new ofstream(output_filename.c_str());
 
-	cout << "Enter Values For A_1, A_2, A_3, B_1, B_2, B_3, eta: " << endl;
-	cin >> A_1 >> A_2 >> A_3 >> B_1 >> B_2 >> B_3 >> eta;
+    vector<double> utility_parameters;
+    get_argument_vector(arguments, "--utility_parameters", true, utility_parameters);
+    A_1 = utility_parameters[0];
+    A_2 = utility_parameters[1];
+    A_3 = utility_parameters[2];
+    B_1 = utility_parameters[3];
+    B_2 = utility_parameters[4];
+    B_3 = utility_parameters[5];
+    eta = utility_parameters[6];
+
+    cout << "A_1: " << A_1 << endl;
+    cout << "A_2: " << A_2 << endl;
+    cout << "A_3: " << A_3 << endl;
+    cout << "B_1: " << B_1 << endl;
+    cout << "B_2: " << B_2 << endl;
+    cout << "B_3: " << B_3 << endl;
+    cout << "eta: " << eta << endl;
+
+//	cout << "Enter Values For A_1, A_2, A_3, B_1, B_2, B_3, eta: " << endl;
+//	cin >> A_1 >> A_2 >> A_3 >> B_1 >> B_2 >> B_3 >> eta;
 
 	(*output_csv) << "Inc_High, Inc_Low, Exp_High, Exp_Low, mu, Welfare, FOC_Inc_H, FOC_Inc_L, FOC_Exp_H, FOC_Exp_L, Bgt Cnst, Welfare2" << endl;
 
@@ -196,10 +239,12 @@ int main(int number_arguments, char **argv) {
         starting_point[4] = min_bound[4] + ((max_bound[4] - min_bound[4]) * drand48());
 #endif
 
-        vector<double> step_size(6, 0);
+        vector<double> step_size(5, 0);
         step_size[0] = 0.005;
         step_size[1] = 0.005;
         step_size[2] = 0.005;
+        step_size[3] = 0.005;
+        step_size[4] = 0.005;
 
         if (search_type.compare("snm") == 0) {
             synchronous_newton_method(arguments, objective_function, starting_point, step_size);
