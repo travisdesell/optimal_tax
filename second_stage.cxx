@@ -20,28 +20,27 @@
 
 using namespace std;
 
-/**
- *  The following parameters are constant.
- */
-double A_1 = 2.00;
-double A_2 = 2.00;
-double A_3 = 2.00;
-double B_1 = 2.00;
-double B_2 = 2.00;
-double B_3 = 2.00;
-double a = 67.98208;
-double b = 7.113661;
-double c = 30;
+/* The following parameters are constant. */
+double A_1;
+double A_2;
+double A_3;
+double B_1;
+double B_2;
+double B_3;
+double eta;
 
 /* Updated 07/23/2012 */
 double cleanprice = 1;
 double dirtyprice = 1;
-double wage_h = 16.0696;
-double wage_l = 10.4980;
+double wage_h = 16.07;
+double wage_l = 10.50;
 double pop_h = 0.40;
 double pop_l = 0.60;
 double time_endowment = 80;
-double eta = 0.10;
+
+double a = 67.98;
+double b = 7.11;
+double c = 30;
 double revenue = 126.79;
 double constraint_penalty = 0.0001;
 
@@ -109,6 +108,10 @@ void check_solution(double tot_inch, double tot_incl, double ag_exph, double ag_
 	double welfare = swf_fb(cleanprice, dirtyprice, wage_h, wage_l, pop_h, pop_l, time_endowment, tot_inch, tot_incl, ag_exph, ag_expl, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta);
 	double checkwelfare = swf_fb(cleanprice, dirtyprice, wage_h, wage_l, pop_h, pop_l, time_endowment, tot_inch2, tot_incl2, ag_exph2, ag_expl2, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta);
 
+	cout << "FOC Income (H): " << focinchval << " Foc Income (L): " << focinclval << endl;
+	cout << "FOC Expenditures (H): " << focexphval << " FOC Expenditures (L): " << focexplval << endl;
+	cout << "Budget Constraint: " << bgtcnstval << " Original Welfare: " << welfare << " Adjusted Welfare: " << checkwelfare << endl;
+
 	(*output_csv) << tot_inch << ", " << tot_incl << ", " << ag_exph << ", " << ag_expl << ", " << mu << ", " << welfare << ", " << focinchval << ", " << focinclval << ", " << focexphval << ", " << focexplval << ", " << bgtcnstval << ", " << checkwelfare << endl;
 }
 
@@ -121,6 +124,10 @@ int main(int number_arguments, char **argv) {
     get_argument(arguments, "--output_filename", true, output_filename);
 
 	output_csv = new ofstream(output_filename.c_str());
+
+	cout << "Enter Values For A_1, A_2, A_3, B_1, B_2, B_3, eta: " << endl;
+	cin >> A_1 >> A_2 >> A_3 >> B_1 >> B_2 >> B_3 >> eta;
+
 	(*output_csv) << "Inc_High, Inc_Low, Exp_High, Exp_Low, mu, Welfare, FOC_Inc_H, FOC_Inc_L, FOC_Exp_H, FOC_Exp_L, Bgt Cnst, Welfare2" << endl;
 
     int number_parameters = 5;
@@ -133,10 +140,10 @@ int main(int number_arguments, char **argv) {
     max_bound[1] = 800;
     min_bound[2] = 0;
     max_bound[2] = 800;
-	min_bound[3] = -0;
+	min_bound[3] = 0;
 	max_bound[3] = 800;
 	min_bound[4] = 0;
-	max_bound[4] = 10;
+	max_bound[4] = 1.0;
 
     string search_type;
     if (!get_argument(arguments, "--search_type", false, search_type)) {
