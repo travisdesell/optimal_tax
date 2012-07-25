@@ -178,18 +178,22 @@ int main(int number_arguments, char **argv) {
         parameter_sweep(min_bound, max_bound, step_size, objective_function);
 
     } else if (search_type.compare("snm") == 0 || search_type.compare("gd") == 0 || search_type.compare("cgd") == 0) {
-		vector<double> starting_point(3, 0);
+		vector<double> starting_point(5, 0);
 
 #ifdef _MSC_VER
 		srand(time(NULL));
         starting_point[0] = min_bound[0] + ((max_bound[0] - min_bound[0]) * ((double)rand()/(double)RAND_MAX));
         starting_point[1] = min_bound[1] + ((max_bound[1] - min_bound[1]) * ((double)rand()/(double)RAND_MAX));
         starting_point[2] = min_bound[2] + ((max_bound[2] - min_bound[2]) * ((double)rand()/(double)RAND_MAX));
+        starting_point[3] = min_bound[2] + ((max_bound[2] - min_bound[2]) * ((double)rand()/(double)RAND_MAX));
+        starting_point[4] = min_bound[2] + ((max_bound[2] - min_bound[2]) * ((double)rand()/(double)RAND_MAX));
 #else
         srand48(time(NULL));
 		starting_point[0] = min_bound[0] + ((max_bound[0] - min_bound[0]) * drand48());
         starting_point[1] = min_bound[1] + ((max_bound[1] - min_bound[1]) * drand48());
         starting_point[2] = min_bound[2] + ((max_bound[2] - min_bound[2]) * drand48());
+        starting_point[3] = min_bound[2] + ((max_bound[2] - min_bound[2]) * drand48());
+        starting_point[4] = min_bound[2] + ((max_bound[2] - min_bound[2]) * drand48());
 #endif
 
         vector<double> step_size(6, 0);
@@ -215,7 +219,7 @@ int main(int number_arguments, char **argv) {
 			cout << "Enter the following: Total Income (H), Total Income (L), Expenditures (H), Expenditures(L), mu: " << endl;
 			cin >> tot_inch >> tot_incl >> ag_exph >> ag_expl >> mu;
 			check_solution(tot_inch, tot_incl, ag_exph, ag_expl, mu);
-	
+
 	} else {
         fprintf(stderr, "Improperly specified search type: '%s'\n", search_type.c_str());
         fprintf(stderr, "Possibilities are:\n");
