@@ -40,3 +40,6 @@ add_subdirectory(government_problem)
 
 add_executable(SecondStage second_stage)
 target_link_libraries(SecondStage government_problem EvolutionaryAlgorithms SynchronousAlgorithms undvc_common ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+
+add_executable(SecondStageExt second_stageext)
+target_link_libraries(SecondStageExt government_problem EvolutionaryAlgorithms SynchronousAlgorithms undvc_common ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})

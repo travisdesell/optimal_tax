@@ -30,8 +30,8 @@ double foc_exp(double cleanprice, double dirtyprice, double wage, double pop, do
 	return foc_exp;
 }
 
-double bgtcnst(double pop_h, double pop_l, double tot_inch, double tot_incl, double ag_exph, double ag_expl) { 
+double bgtcnst(double pop_h, double pop_l, double tot_inch, double tot_incl, double ag_exph, double ag_expl, double revenue) { 
 
-	double bgtcnst = ( pop_h * ( tot_inch - ag_exph ) ) + ( pop_l * ( tot_incl - ag_expl ) ) - 126.79;
+	double bgtcnst = ( pop_h * ( tot_inch - ag_exph ) ) + ( pop_l * ( tot_incl - ag_expl ) ) - revenue;
 	return bgtcnst;
 }
