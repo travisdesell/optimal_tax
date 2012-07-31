@@ -22,24 +22,25 @@ find_package(Boost REQUIRED system filesystem)
 
 add_subdirectory(tao)
 
-include_directories (${PROJECT_SOURCE_DIR}/tao/evolutionary_algorithms)
-include_directories (${PROJECT_SOURCE_DIR}/tao/synchronous_algorithms)
-include_directories (${PROJECT_SOURCE_DIR}/tao/undvc_common)
+#include_directories (${PROJECT_SOURCE_DIR}/tao/evolutionary_algorithms)
+#include_directories (${PROJECT_SOURCE_DIR}/tao/synchronous_algorithms)
+#include_directories (${PROJECT_SOURCE_DIR}/tao/undvc_common)
+include_directories (${PROJECT_SOURCE_DIR}/tao)
 include_directories (${Boost_INCLUDE_DIR})
 
 
 add_executable(EconMrsyx econ_mrsyx)
-target_link_libraries(EconMrsyx undvc_common EvolutionaryAlgorithms SynchronousAlgorithms undvc_common ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+target_link_libraries(EconMrsyx undvc_common asynchronous_algorithms synchronous_algorithms tao_util)
 
 add_subdirectory(multi_objective)
 
 add_executable(Elasticities elasticities)
-target_link_libraries(Elasticities multi_objective EvolutionaryAlgorithms SynchronousAlgorithms undvc_common ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+target_link_libraries(Elasticities multi_objective undvc_common asynchronous_algorithms synchronous_algorithms tao_util)
 
 add_subdirectory(government_problem)
 
 add_executable(SecondStage second_stage)
-target_link_libraries(SecondStage government_problem EvolutionaryAlgorithms SynchronousAlgorithms undvc_common ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+target_link_libraries(SecondStage government_problem undvc_common asynchronous_algorithms synchronous_algorithms tao_util)
 
 add_executable(SecondStageExt second_stageext)
-target_link_libraries(SecondStageExt government_problem EvolutionaryAlgorithms SynchronousAlgorithms undvc_common ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+target_link_libraries(SecondStageExt government_problem undvc_common asynchronous_algorithms synchronous_algorithms tao_util) 

@@ -5,8 +5,8 @@
 #include <vector>
 #include <string>
 
-#include "tao/evolutionary_algorithms/particle_swarm.hxx"
-#include "tao/evolutionary_algorithms/differential_evolution.hxx"
+#include "tao/asynchronous_algorithms/particle_swarm.hxx"
+#include "tao/asynchronous_algorithms/differential_evolution.hxx"
 
 #include "tao/synchronous_algorithms/parameter_sweep.hxx"
 #include "tao/synchronous_algorithms/synchronous_gradient_descent.hxx"

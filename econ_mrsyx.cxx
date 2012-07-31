@@ -5,13 +5,13 @@
 #include <vector>
 #include <string>
 
-#include "particle_swarm.hxx"
-#include "differential_evolution.hxx"
+#include "asynchronous_algorithms/particle_swarm.hxx"
+#include "asynchronous_algorithms/differential_evolution.hxx"
 
-#include "parameter_sweep.hxx"
+#include "synchronous_algorithms/parameter_sweep.hxx"
 
 //from undvc_common
-#include "arguments.hxx"
+#include "undvc_common/arguments.hxx"
 
 using namespace std;
 
