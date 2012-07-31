@@ -50,7 +50,6 @@ double objective_function(const vector<double> &A) {
     double f = 0;
     uint32_t success_count = 0;
 
-<<<<<<< HEAD
 	double tot_inch = A[0]; // total income (high type)
 	double tot_incl = A[1]; // total income (low type)
 	double ag_exph = A[2]; // aggregate expenditures (high type)
@@ -110,45 +109,6 @@ double objective_function(const vector<double> &A) {
     if (ag_exph >= tot_inch) {
         f -= (ag_exph - tot_inch);
     }
-=======
-	double tot_inch = A[0];
-	double tot_incl = A[1];
-	double ag_exph = A[2];
-	double ag_expl = A[3];
-	double mu = A[4];
-
-    if (ag_exph < tot_inch && ag_expl < tot_incl) {
-        double term_h = pop_h * pow(indirectutility(cleanprice, dirtyprice, wage_h, time_endowment, tot_inch, ag_exph, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c), 1-eta);
-        double term_l = pop_l * pow(indirectutility(cleanprice, dirtyprice, wage_l, time_endowment, tot_incl, ag_expl, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c), 1-eta);
-
-        double term_bc = ( pop_h * ( tot_inch - ag_exph ) ) + ( pop_l * ( tot_incl - ag_expl ) ) - revenue;
-
-        f = ( 1 / ( 1 - eta ) ) * ( term_h + term_l ) + ( mu * term_bc );
-
-        cout << "POINT: " << vector_to_string(A) << endl;
-
-        cout << "term_h:  " << term_h << endl;
-        cout << "  indirect_utility: " << indirectutility(cleanprice, dirtyprice, wage_h, time_endowment, tot_inch, ag_exph, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) << endl;
-        cout << "  1 - eta         : " << (1 - eta) << endl;
-        cout << "  pop_h           : " << pop_h << endl;
-        cout << "  pow(indirect_utility, 1 - eta) : " << pow(indirectutility(cleanprice, dirtyprice, wage_h, time_endowment, tot_inch, ag_exph, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c), 1 - eta) << endl;
-        cout << "term_l:  " << term_l << endl;
-        cout << "  indirect_utility: " << indirectutility(cleanprice, dirtyprice, wage_l, time_endowment, tot_incl, ag_expl, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) << endl;
-        cout << "  1 - eta         : " << (1 - eta) << endl;
-        cout << "term_bc: " << term_bc << endl;
-        cout << "f:       " << f << endl;
-
-    }
-
-    if (ag_exph > tot_inch) {
-        f -= (ag_exph - tot_inch);
-    }
-
-    if (ag_expl > tot_incl) {
-        f -= (ag_expl - tot_incl);
-    }
->>>>>>> 486f135702ec3c45e4eb145c236f664bf8fc42ca
-
 	return f;
 }
 
