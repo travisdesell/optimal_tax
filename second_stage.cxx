@@ -41,7 +41,7 @@ double time_endowment = 80;
 double a = 52.50;
 double b = 5.00;
 double c = 5.00;
-double revenue = 126.79;
+double revenue = 32.35;
 double constraint_penalty = 0.0001;
 
 ofstream *output_csv;
@@ -126,8 +126,8 @@ void check_solution(double tot_inch, double tot_incl, double ag_exph, double ag_
 	double ag_exph2 = ag_exph - 1;
 	double ag_expl2 = ag_expl + 1;
 
-	double welfare = swf_fb(cleanprice, dirtyprice, wage_h, wage_l, pop_h, pop_l, time_endowment, tot_inch, tot_incl, ag_exph, ag_expl, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta);
-	double checkwelfare = swf_fb(cleanprice, dirtyprice, wage_h, wage_l, pop_h, pop_l, time_endowment, tot_inch2, tot_incl2, ag_exph2, ag_expl2, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta);
+	double welfare = swf_fb(cleanprice, dirtyprice, wage_h, wage_l, pop_h, pop_l, time_endowment, tot_inch, tot_incl, ag_exph, ag_expl, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta, revenue);
+	double checkwelfare = swf_fb(cleanprice, dirtyprice, wage_h, wage_l, pop_h, pop_l, time_endowment, tot_inch2, tot_incl2, ag_exph2, ag_expl2, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta, revenue);
 
 	cout << "FOC Income (H): " << focinchval << " Foc Income (L): " << focinclval << endl;
 	cout << "FOC Expenditures (H): " << focexphval << " FOC Expenditures (L): " << focexplval << endl;
@@ -173,16 +173,17 @@ int main(int number_arguments, char **argv) {
     vector<double> min_bound(number_parameters, 0);
     vector<double> max_bound(number_parameters, 0);
 
-    min_bound[0] = 241.05;
-    max_bound[0] = 964.2;
-    min_bound[1] = 157.50;
-    max_bound[1] = 630;
-    min_bound[2] = 241.05;
-    max_bound[2] = 964.2;
-	min_bound[3] = 157.50;
-	max_bound[3] = 630;
+	// 25 < L^h < 50
+    min_bound[0] = 401.75;
+    max_bound[0] = 803.50;
+    min_bound[1] = 262.50;
+    max_bound[1] = 525.00;
+    min_bound[2] = 401.75;
+    max_bound[2] = 803.50;
+	min_bound[3] = 262.50;
+	max_bound[3] = 525.00;
 	min_bound[4] = 0.01;
-	max_bound[4] = 10.0;
+	max_bound[4] = 100.00;
 
     string search_type;
     if (!get_argument(arguments, "--search_type", false, search_type)) {
