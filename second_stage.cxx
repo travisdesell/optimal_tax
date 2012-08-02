@@ -55,8 +55,31 @@ double objective_function(const vector<double> &A) {
 	double ag_exph = A[2]; // aggregate expenditures (high type)
 	double ag_expl = A[3]; // aggregate expenditures (low type)
 	double mu = A[4]; // multiplier term
+    
+    /* restrictions: */
+    /*      tot_inch > tot_incl */
+    /*      ag_exph > ag_expl */
+    /*      tot_inch > ag_exph */
 
-	if (tot_inch > tot_incl && ag_exph > ag_expl && tot_inch > ag_exph) {
+    bool success = true;
+    double min_distance = 1;
+    if (tot_inch - min_distance < tot_incl) {
+        f += (tot_inch - tot_incl) - min_distance;
+        success = false;
+//        cout << "fail: tot_inch " << tot_inch << " < tot_incl " << tot_incl << ", f = " << f << endl;
+    }
+    if (ag_exph - min_distance < ag_expl) {
+        f += (ag_exph - ag_expl) - min_distance;
+        success = false;
+//        cout << "fail: ag_exph " << ag_exph << " < ag_expl " << ag_expl << ", f = " << f << endl;
+    }
+    if (tot_inch - min_distance < ag_exph) {
+        f += (tot_inch - ag_exph) - min_distance;
+        success = false;
+//        cout << "fail: tot_inch " << tot_inch << " < ag_exph " << ag_exph << ", f = " << f << endl;
+    }
+
+	if (success) {
 		// First-Order Conditions -- Income (high type, low type)
 		double focinchval = foc_inc(cleanprice, dirtyprice, wage_h, pop_h, time_endowment, tot_inch, ag_exph, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta) * foc_inc(cleanprice, dirtyprice, wage_h, pop_h, time_endowment, tot_inch, ag_exph, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta);
 		double focinclval = foc_inc(cleanprice, dirtyprice, wage_l, pop_l, time_endowment, tot_incl, ag_expl, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta) * foc_inc(cleanprice, dirtyprice, wage_l, pop_l, time_endowment, tot_incl, ag_expl, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta);
@@ -69,10 +92,11 @@ double objective_function(const vector<double> &A) {
 		double bgtcnstval = bgtcnst(pop_h, pop_l, tot_inch, tot_incl, ag_exph, ag_expl, revenue);
 
 		// Minimize sum of squared differences
-		f = - ( focinchval + focinclval + focexphval + focexplval + bgtcnstval );
+		f = - fabs( focinchval + focinclval + focexphval + focexplval + bgtcnstval );
 
 		//Print Different Values To Debug Code
 		//Current Parameter Guess
+        /*
 		cout << "POINT: " << vector_to_string(A) << endl;
 		cout << "Miscellaneous Values: " << endl;
 		cout << "pop_h           : " << pop_h << endl;
@@ -99,15 +123,7 @@ double objective_function(const vector<double> &A) {
 
 		cout << "term_bc: " << bgtcnstval << endl;
 		cout << "f:       " << f << endl;
-    }
-	if (tot_incl >= tot_inch) {
-		f -= (tot_incl - tot_inch);
-	}
-	if (ag_expl >= ag_exph) {
-		f -= (ag_expl - ag_exph);
-	}
-    if (ag_exph >= tot_inch) {
-        f -= (ag_exph - tot_inch);
+        */
     }
 	return f;
 }
