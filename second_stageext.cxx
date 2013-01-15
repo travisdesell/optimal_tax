@@ -1,4 +1,6 @@
 #include <cfloat>
+#include "stdint.h"
+#include <time.h>
 
 #include <iostream>
 #include <fstream>
@@ -45,32 +47,6 @@ double revenue = 126.79;
 double constraint_penalty = 0.0001;
 
 ofstream *output_csv;
-
-/* Calculate a penalty for being less than or equal to the bound given*/
-double penalty_leq(double max, double value) {
-    if (value <= max) return constraint_penalty + (max - value);
-    return 0;
-}
-
-/* Calculate a penalty for being inside the bounds given */
-double penalty_in_inclusive(double min, double max, double value) {
-    if (value >= min && value <= max) {
-        double diff_min = value - min;  /* difference from the min value */
-        double diff_max = max - value;  /* difference from the max value */
-
-        /* return the difference from the closest boundary.  Maybe it should the farthest boundary? */
-        if (diff_min > diff_max) return constraint_penalty + diff_max;
-        else return constraint_penalty + diff_min;
-    }
-    return 0;
-}
-
-/* Calculate a penalty for being outside the bounds given */
-double penalty_out_inclusive(double min, double max, double value) {
-    if (value <= min) return constraint_penalty + (min - value);
-    if (value >= max) return constraint_penalty + (value - max);
-    return 0;
-}
 
 double objective_function(const vector<double> &A) {
     double f = 0;

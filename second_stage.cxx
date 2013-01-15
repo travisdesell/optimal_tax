@@ -1,4 +1,6 @@
 #include <cfloat>
+#include "stdint.h"
+#include <time.h>
 
 #include <iostream>
 #include <fstream>
@@ -56,7 +58,35 @@ double objective_function(const vector<double> &A) {
 	double ag_expl = A[3]; // aggregate expenditures (low type)
 	double mu = A[4]; // multiplier term
 
-	if (tot_inch > tot_incl && ag_exph > ag_expl && tot_inch > ag_exph) {
+	/* Restrictions On Parameter Values
+		-  tot_inch > tot_incl
+		-  ag_exph > ag_expl
+		-  tot_inch > ag_exph */
+	
+	bool success = true;
+
+	/* total income = wage rate * labor hours ==> 
+			tot_inch = wage_h * labor_h ==> labor_h = tot_inch / wage_h.
+	   We can find labor_h and labor_l.  Restriction is actually labor_h > labor_l. */
+	double labor_h = tot_inch / wage_h;
+	double labor_l = tot_incl / wage_l;
+
+	double minhrs_distance = 1.00; // high type should work more than low type ==> labor_h > labor_l
+	double min_distance = 10;
+
+	if (labor_h - minhrs_distance < labor_l) {
+		f += (labor_h - labor_l) - minhrs_distance;
+		success = false;
+	}
+	if (ag_exph - min_distance < ag_expl) {
+		f += (ag_exph - ag_expl) - min_distance;
+		success = false;
+	}
+	if (tot_inch - min_distance < ag_exph) {
+		f += (tot_inch - ag_exph) - min_distance;
+		success = false;
+	}
+	if (success) {
 		// First-Order Conditions -- Income (high type, low type)
 		double focinchval = foc_inc(cleanprice, dirtyprice, wage_h, pop_h, time_endowment, tot_inch, ag_exph, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta) * foc_inc(cleanprice, dirtyprice, wage_h, pop_h, time_endowment, tot_inch, ag_exph, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta);
 		double focinclval = foc_inc(cleanprice, dirtyprice, wage_l, pop_l, time_endowment, tot_incl, ag_expl, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta) * foc_inc(cleanprice, dirtyprice, wage_l, pop_l, time_endowment, tot_incl, ag_expl, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta);
@@ -66,49 +96,20 @@ double objective_function(const vector<double> &A) {
 		double focexplval = foc_exp(cleanprice, dirtyprice, wage_l, pop_l, time_endowment, tot_incl, ag_expl, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta) * foc_exp(cleanprice, dirtyprice, wage_l, pop_l, time_endowment, tot_incl, ag_expl, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta);
 
 		// Bgt Constraint
-		double bgtcnstval = bgtcnst(pop_h, pop_l, tot_inch, tot_incl, ag_exph, ag_expl, revenue);
+		double bgtcnstval = bgtcnst(pop_h, pop_l, tot_inch, tot_incl, ag_exph, ag_expl, revenue) * bgtcnst(pop_h, pop_l, tot_inch, tot_incl, ag_exph, ag_expl, revenue);
+
+		cout << "POINT: " << vector_to_string(A) << endl;
+		cout << "Revenue: " << revenue << endl;
+		cout << "Bgt Cnst: " << bgtcnst(pop_h, pop_l, tot_inch, tot_incl, ag_exph, ag_expl, revenue) << endl;
+		
+//		cout << focinchval << "; " << focinclval << "; " << focexphval << "; " << focexplval << "; " << bgtcnstval << endl;
 
 		// Minimize sum of squared differences
 		f = - ( focinchval + focinclval + focexphval + focexplval + bgtcnstval );
+//		cout << "Fitness function: " << f << endl;
 
-		//Print Different Values To Debug Code
-		//Current Parameter Guess
-		cout << "POINT: " << vector_to_string(A) << endl;
-		cout << "Miscellaneous Values: " << endl;
-		cout << "pop_h           : " << pop_h << endl;
-		cout << "pop_l           : " << pop_l << endl;
-		cout << "1 - eta         : " << 1 - eta << endl;
-
-		cout << "High Type Values: " << endl;
-		cout << "Clean Good Qty  : " << demandx(cleanprice, dirtyprice, wage_h, time_endowment, tot_inch, ag_exph, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) << endl;
-		cout << "Dirty Good Qty  : " << demandy(cleanprice, dirtyprice, wage_h, time_endowment, tot_inch, ag_exph, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) << endl;
-        cout << "Leisure Qty     : " << ( ( time_endowment - ( tot_inch / wage_h ) ) - c ) << endl;
-		cout << "Indirect Utility: " << indirectutility(cleanprice, dirtyprice, wage_h, time_endowment, tot_inch, ag_exph, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) << endl;
-        cout << "indutil ^ 1-eta : " << pow(indirectutility(cleanprice, dirtyprice, wage_h, time_endowment, tot_inch, ag_exph, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c), 1 - eta) << endl;
-		cout << "FOC_inc_h		 : " << foc_inc(cleanprice, dirtyprice, wage_h, pop_h, time_endowment, tot_inch, ag_exph, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta) << endl;
-        cout << "FOC_exp_h		 : " << foc_exp(cleanprice, dirtyprice, wage_h, pop_h, time_endowment, tot_inch, ag_exph, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta) << endl;
-
-		cout << "Low Type Values: " << endl;
-		cout << "Clean Good Qty  : " << demandx(cleanprice, dirtyprice, wage_l, time_endowment, tot_incl, ag_expl, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) << endl;
-		cout << "Dirty Good Qty  : " << demandy(cleanprice, dirtyprice, wage_l, time_endowment, tot_incl, ag_expl, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) << endl;
-        cout << "Leisure Qty     : " << ( ( time_endowment - ( tot_incl / wage_l ) ) - c ) << endl;
-		cout << "Indirect Utility: " << indirectutility(cleanprice, dirtyprice, wage_l, time_endowment, tot_incl, ag_expl, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) << endl;
-        cout << "indutil ^ 1-eta : " << pow(indirectutility(cleanprice, dirtyprice, wage_l, time_endowment, tot_incl, ag_expl, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c), 1 - eta) << endl;
-		cout << "FOC_inc_l		 : " << foc_inc(cleanprice, dirtyprice, wage_l, pop_l, time_endowment, tot_incl, ag_expl, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta) << endl;
-        cout << "FOC_exp_l		 : " << foc_exp(cleanprice, dirtyprice, wage_l, pop_l, time_endowment, tot_incl, ag_expl, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta) << endl;
-
-		cout << "term_bc: " << bgtcnstval << endl;
-		cout << "f:       " << f << endl;
     }
-	if (tot_incl >= tot_inch) {
-		f -= (tot_incl - tot_inch);
-	}
-	if (ag_expl >= ag_exph) {
-		f -= (ag_expl - ag_exph);
-	}
-    if (ag_exph >= tot_inch) {
-        f -= (ag_exph - tot_inch);
-    }
+
 	return f;
 }
 
@@ -173,14 +174,14 @@ int main(int number_arguments, char **argv) {
     vector<double> min_bound(number_parameters, 0);
     vector<double> max_bound(number_parameters, 0);
 
-	// 25 < L^h < 50
-    min_bound[0] = 401.75;
+	// 30 < L^h < 50
+    min_bound[0] = 482.10;
     max_bound[0] = 803.50;
-    min_bound[1] = 262.50;
+    min_bound[1] = 315.00;
     max_bound[1] = 525.00;
-    min_bound[2] = 401.75;
+    min_bound[2] = 482.10;
     max_bound[2] = 803.50;
-	min_bound[3] = 262.50;
+	min_bound[3] = 315.00;
 	max_bound[3] = 525.00;
 	min_bound[4] = 0.01;
 	max_bound[4] = 100.00;

@@ -1,4 +1,6 @@
 #include <cfloat>
+#include "stdint.h"
+#include <time.h>
 
 #include <iostream>
 #include <fstream>
