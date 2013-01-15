@@ -57,7 +57,7 @@ double objective_function(const vector<double> &A) {
 	double ag_exph = A[2]; // aggregate expenditures (high type)
 	double ag_expl = A[3]; // aggregate expenditures (low type)
 	double mu = A[4]; // multiplier term
-
+    
 	/* Restrictions On Parameter Values
 		-  tot_inch > tot_incl
 		-  ag_exph > ag_expl
