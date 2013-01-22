@@ -98,9 +98,9 @@ double objective_function(const vector<double> &A) {
 		// Bgt Constraint
 		double bgtcnstval = bgtcnst(pop_h, pop_l, tot_inch, tot_incl, ag_exph, ag_expl, revenue) * bgtcnst(pop_h, pop_l, tot_inch, tot_incl, ag_exph, ag_expl, revenue);
 
-		cout << "POINT: " << vector_to_string(A) << endl;
+		/* cout << "POINT: " << vector_to_string(A) << endl;
 		cout << "Revenue: " << revenue << endl;
-		cout << "Bgt Cnst: " << bgtcnst(pop_h, pop_l, tot_inch, tot_incl, ag_exph, ag_expl, revenue) << endl;
+		cout << "Bgt Cnst: " << bgtcnst(pop_h, pop_l, tot_inch, tot_incl, ag_exph, ag_expl, revenue) << endl; */
 		
 //		cout << focinchval << "; " << focinclval << "; " << focexphval << "; " << focexplval << "; " << bgtcnstval << endl;
 
@@ -136,8 +136,6 @@ void check_solution(double tot_inch, double tot_incl, double ag_exph, double ag_
 
 	(*output_csv) << tot_inch << ", " << tot_incl << ", " << ag_exph << ", " << ag_expl << ", " << mu << ", " << welfare << ", " << focinchval << ", " << focinclval << ", " << focexphval << ", " << focexplval << ", " << bgtcnstval << ", " << checkwelfare << endl;
 }
-
-
 
 int main(int number_arguments, char **argv) {
     vector<string> arguments(argv, argv + number_arguments);
@@ -281,68 +279,3 @@ int main(int number_arguments, char **argv) {
 
     return 0;
 }
-
-
-/*
-double objective_function_swf(const vector<double> &A) {
-    double f = 0;
-    uint32_t success_count = 0;
-
-	double tot_inch = A[0];
-	double tot_incl = A[1];
-	double ag_exph = A[2];
-	double ag_expl = A[3];
-	double mu = A[4];
-
-	if (tot_inch > tot_incl && ag_exph > ag_expl && tot_inch > ag_exph) {
-        double term_h = pop_h * pow(indirectutility(cleanprice, dirtyprice, wage_h, time_endowment, tot_inch, ag_exph, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c), 1-eta);
-        double term_l = pop_l * pow(indirectutility(cleanprice, dirtyprice, wage_l, time_endowment, tot_incl, ag_expl, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c), 1-eta);
-
-        double term_bc = ( pop_h * ( tot_inch - ag_exph ) ) + ( pop_l * ( tot_incl - ag_expl ) ) - revenue;
-
-        f = ( 1 / ( 1 - eta ) ) * ( term_h + term_l ) + ( mu * term_bc );
-
-		//Print Different Values To Debug Code
-		//Current Parameter Guess
-		cout << "POINT: " << vector_to_string(A) << endl;
-		cout << "Miscellaneous Values: " << endl;
-		cout << "pop_h           : " << pop_h << endl;
-		cout << "pop_l           : " << pop_l << endl;
-		cout << "1 - eta         : " << 1 - eta << endl;
-
-		cout << "High Type Values: " << endl;
-		cout << "Clean Good Qty  : " << demandx(cleanprice, dirtyprice, wage_h, time_endowment, tot_inch, ag_exph, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) << endl;
-		cout << "Dirty Good Qty  : " << demandy(cleanprice, dirtyprice, wage_h, time_endowment, tot_inch, ag_exph, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) << endl;
-        cout << "Leisure Qty     : " << ( ( time_endowment - ( tot_inch / wage_h ) ) - c ) << endl;
-		cout << "Indirect Utility: " << indirectutility(cleanprice, dirtyprice, wage_h, time_endowment, tot_inch, ag_exph, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) << endl;
-        cout << "indutil ^ 1-eta : " << pow(indirectutility(cleanprice, dirtyprice, wage_h, time_endowment, tot_inch, ag_exph, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c), 1 - eta) << endl;
-		cout << "term_h          : " << term_h << endl;
-		cout << "FOC_inc_h		 : " << foc_inc(cleanprice, dirtyprice, wage_h, pop_h, time_endowment, tot_inch, ag_exph, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta) << endl;
-        cout << "FOC_exp_h		 : " << foc_exp(cleanprice, dirtyprice, wage_h, pop_h, time_endowment, tot_inch, ag_exph, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta) << endl;
-
-		cout << "Low Type Values: " << endl;
-		cout << "Clean Good Qty  : " << demandx(cleanprice, dirtyprice, wage_l, time_endowment, tot_incl, ag_expl, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) << endl;
-		cout << "Dirty Good Qty  : " << demandy(cleanprice, dirtyprice, wage_l, time_endowment, tot_incl, ag_expl, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) << endl;
-        cout << "Leisure Qty     : " << ( ( time_endowment - ( tot_incl / wage_l ) ) - c ) << endl;
-		cout << "Indirect Utility: " << indirectutility(cleanprice, dirtyprice, wage_l, time_endowment, tot_incl, ag_expl, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c) << endl;
-        cout << "indutil ^ 1-eta : " << pow(indirectutility(cleanprice, dirtyprice, wage_l, time_endowment, tot_incl, ag_expl, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c), 1 - eta) << endl;
-		cout << "term_l          : " << term_l << endl;
-		cout << "FOC_inc_l		 : " << foc_inc(cleanprice, dirtyprice, wage_l, pop_l, time_endowment, tot_incl, ag_expl, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta) << endl;
-        cout << "FOC_exp_l		 : " << foc_exp(cleanprice, dirtyprice, wage_l, pop_l, time_endowment, tot_incl, ag_expl, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta) << endl;
-
-		cout << "term_bc: " << term_bc << endl;
-		cout << "f:       " << f << endl;
-    }
-	if (tot_incl >= tot_inch) {
-		f -= (tot_incl - tot_inch) * 100;
-	}
-	if (ag_expl >= ag_exph) {
-		f -= (ag_expl - ag_exph) * 100;
-	}
-    if (ag_exph >= tot_inch) {
-        f -= (ag_exph - tot_inch) * 100;
-    }
-
-	return f;
-}
-*/
