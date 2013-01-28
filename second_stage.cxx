@@ -43,7 +43,7 @@ double time_endowment = 80;
 double a = 52.50;
 double b = 5.00;
 double c = 5.00;
-double revenue = 32.35;
+double revenue = 0;
 double constraint_penalty = 0.0001;
 
 ofstream *output_csv;
@@ -57,7 +57,15 @@ double objective_function(const vector<double> &A) {
 	double ag_exph = A[2]; // aggregate expenditures (high type)
 	double ag_expl = A[3]; // aggregate expenditures (low type)
 	double mu = A[4]; // multiplier term
-    
+
+    /*
+    cout << "tot_inch: " << tot_inch << endl;
+    cout << "tot_incl: " << tot_incl << endl;
+    cout << "ag_exph: " << ag_exph << endl;
+    cout << "ag_expl: " << ag_expl << endl;
+    cout << "mu: " << mu << endl;
+    */
+
 	/* Restrictions On Parameter Values
 		-  tot_inch > tot_incl
 		-  ag_exph > ag_expl
@@ -74,18 +82,32 @@ double objective_function(const vector<double> &A) {
 	double minhrs_distance = 1.00; // high type should work more than low type ==> labor_h > labor_l
 	double min_distance = 10;
 
-	if (labor_h - minhrs_distance < labor_l) {
-		f += (labor_h - labor_l) - minhrs_distance;
+	if (labor_h < labor_l) {
+        f -= (labor_l - labor_h); //subtract the difference between labor_l and labor_h
+        f -= 50.0;  //apply a penalty.
 		success = false;
 	}
-	if (ag_exph - min_distance < ag_expl) {
-		f += (ag_exph - ag_expl) - min_distance;
+
+	if (ag_exph < ag_expl) {
+        f -= (ag_expl - ag_exph); //subtract the difference between ag_exph and ag_expl, (because ag_expl is greater than ag_exph in here).
+        f -= 50.0;  //apply a penalty.
 		success = false;
 	}
-	if (tot_inch - min_distance < ag_exph) {
-		f += (tot_inch - ag_exph) - min_distance;
+
+	if (tot_inch < ag_exph) {
+        f -= (ag_exph - tot_inch);
+        f -= 50.0; //apply a penalty;
 		success = false;
 	}
+
+//    if (ag_expl < tot_incl) {
+//        f -= (tot_incl - ag_expl);
+//        f -= 50;
+//        success = false;
+//    }
+
+//    cout << "success: " << success << endl;
+
 	if (success) {
 		// First-Order Conditions -- Income (high type, low type)
 		double focinchval = foc_inc(cleanprice, dirtyprice, wage_h, pop_h, time_endowment, tot_inch, ag_exph, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta) * foc_inc(cleanprice, dirtyprice, wage_h, pop_h, time_endowment, tot_inch, ag_exph, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta);
@@ -106,7 +128,7 @@ double objective_function(const vector<double> &A) {
 
 		// Minimize sum of squared differences
 		f = - ( focinchval + focinclval + focexphval + focexplval + bgtcnstval );
-//		cout << "Fitness function: " << f << endl;
+//		cout << "Successful Fitness function: " << f << endl;
 
     }
 
@@ -260,6 +282,19 @@ int main(int number_arguments, char **argv) {
 			cout << "Enter the following: Total Income (H), Total Income (L), Expenditures (H), Expenditures(L), mu: " << endl;
 			cin >> tot_inch >> tot_incl >> ag_exph >> ag_expl >> mu;
 			check_solution(tot_inch, tot_incl, ag_exph, ag_expl, mu);
+
+            /*
+            vector<double> values;
+            values.push_back(554.493678067659);
+            values.push_back(351.801407573766);
+            values.push_back(490.04465848113);
+            values.push_back(351.547612048929);
+            values.push_back(17.3739636182224);
+
+            524.507057824352 342.708407414792 508.125796992206 359.087048763142 17.8282903179667
+
+            cout << "Objective function returns: " << objective_function(values) << endl;
+            */
 
 	} else {
         fprintf(stderr, "Improperly specified search type: '%s'\n", search_type.c_str());
