@@ -58,53 +58,43 @@ double objective_function(const vector<double> &A) {
 	double ag_expl = A[3]; // aggregate expenditures (low type)
 	double mu = A[4]; // multiplier term
 
-    /*
-    cout << "tot_inch: " << tot_inch << endl;
-    cout << "tot_incl: " << tot_incl << endl;
-    cout << "ag_exph: " << ag_exph << endl;
-    cout << "ag_expl: " << ag_expl << endl;
-    cout << "mu: " << mu << endl;
-    */
-
 	/* Restrictions On Parameter Values
 		-  tot_inch > tot_incl
 		-  ag_exph > ag_expl
 		-  tot_inch > ag_exph */
 	
-	bool success = true;
-
-	/* total income = wage rate * labor hours ==> 
-			tot_inch = wage_h * labor_h ==> labor_h = tot_inch / wage_h.
-	   We can find labor_h and labor_l.  Restriction is actually labor_h > labor_l. */
+	/*Can rewrite total income constraint based on labor supply.
+		total income = wage rate * labor hours ==>
+		tot_inch = wage_h * labor_h ==> labor_h = tot_inch / wage_h.
+	  Restriction is labor_h > labor_l (high type works more than low type) */
 	double labor_h = tot_inch / wage_h;
 	double labor_l = tot_incl / wage_l;
+	
+	bool success = true;
 
-	double minhrs_distance = 1.00; // high type should work more than low type ==> labor_h > labor_l
-	double min_distance = 10;
-
+	/*if (tot_inch < tot_incl) {
+		f -= (tot_incl - tot_inch);
+		f -= 50.0;
+		success = false;
+	}*/
+	
 	if (labor_h < labor_l) {
         f -= (labor_l - labor_h); //subtract the difference between labor_l and labor_h
-        f -= 50.0;  //apply a penalty.
+        f -= 25.0;  //apply a penalty.
 		success = false;
-	}
+	} 
 
 	if (ag_exph < ag_expl) {
-        f -= (ag_expl - ag_exph); //subtract the difference between ag_exph and ag_expl, (because ag_expl is greater than ag_exph in here).
-        f -= 50.0;  //apply a penalty.
+        f -= (ag_expl - ag_exph); //subtract the difference between ag_expl and ag_exph
+        f -= 25.0;  //apply a penalty.
 		success = false;
 	}
 
 	if (tot_inch < ag_exph) {
-        f -= (ag_exph - tot_inch);
-        f -= 50.0; //apply a penalty;
+        f -= (ag_exph - tot_inch); //subtract the difference between ag_exph and tot_inch
+        f -= 25.0; //apply a penalty.
 		success = false;
 	}
-
-//    if (ag_expl < tot_incl) {
-//        f -= (tot_incl - ag_expl);
-//        f -= 50;
-//        success = false;
-//    }
 
 //    cout << "success: " << success << endl;
 
@@ -122,16 +112,13 @@ double objective_function(const vector<double> &A) {
 
 		/* cout << "POINT: " << vector_to_string(A) << endl;
 		cout << "Revenue: " << revenue << endl;
-		cout << "Bgt Cnst: " << bgtcnst(pop_h, pop_l, tot_inch, tot_incl, ag_exph, ag_expl, revenue) << endl; */
-		
-//		cout << focinchval << "; " << focinclval << "; " << focexphval << "; " << focexplval << "; " << bgtcnstval << endl;
+		cout << "Bgt Cnst: " << bgtcnst(pop_h, pop_l, tot_inch, tot_incl, ag_exph, ag_expl, revenue) << endl;
+		cout << focinchval << "; " << focinclval << "; " << focexphval << "; " << focexplval << "; " << bgtcnstval << endl; */
 
 		// Minimize sum of squared differences
 		f = - ( focinchval + focinclval + focexphval + focexplval + bgtcnstval );
-//		cout << "Successful Fitness function: " << f << endl;
-
+		//		cout << "Successful Fitness function: " << f << endl;
     }
-
 	return f;
 }
 
@@ -177,31 +164,23 @@ int main(int number_arguments, char **argv) {
     B_3 = utility_parameters[5];
     eta = utility_parameters[6];
 
-    cout << "A_1: " << A_1 << endl;
-    cout << "A_2: " << A_2 << endl;
-    cout << "A_3: " << A_3 << endl;
-    cout << "B_1: " << B_1 << endl;
-    cout << "B_2: " << B_2 << endl;
-    cout << "B_3: " << B_3 << endl;
-    cout << "eta: " << eta << endl;
-
-//	cout << "Enter Values For A_1, A_2, A_3, B_1, B_2, B_3, eta: " << endl;
-//	cin >> A_1 >> A_2 >> A_3 >> B_1 >> B_2 >> B_3 >> eta;
-
 	(*output_csv) << "Inc_High, Inc_Low, Exp_High, Exp_Low, mu, Welfare, FOC_Inc_H, FOC_Inc_L, FOC_Exp_H, FOC_Exp_L, Bgt Cnst, Welfare2" << endl;
 
     int number_parameters = 5;
     vector<double> min_bound(number_parameters, 0);
     vector<double> max_bound(number_parameters, 0);
 
-	// 30 < L^h < 50
+	// Variable Order: tot_inch = A[0], tot_incl = A[1]; ag_exph = A[2]; ag_expl = A[3]; mu = A[4] 
+	// Wage rates: w^h = 16.07; w^l = 10.50
+	// I^h,I^l: 30 < L^h < 50
+	// e^h,e^l: 25 < L^h < 50
     min_bound[0] = 482.10;
     max_bound[0] = 803.50;
     min_bound[1] = 315.00;
     max_bound[1] = 525.00;
-    min_bound[2] = 482.10;
+    min_bound[2] = 401.75;
     max_bound[2] = 803.50;
-	min_bound[3] = 315.00;
+	min_bound[3] = 262.50;
 	max_bound[3] = 525.00;
 	min_bound[4] = 0.01;
 	max_bound[4] = 100.00;
