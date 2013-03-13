@@ -80,19 +80,19 @@ double objective_function(const vector<double> &A) {
 	
 	if (labor_h < labor_l) {
         f -= (labor_l - labor_h); //subtract the difference between labor_l and labor_h
-        f -= 25.0;  //apply a penalty.
+        f -= 10.0;  //apply a penalty.
 		success = false;
 	} 
 
 	if (ag_exph < ag_expl) {
         f -= (ag_expl - ag_exph); //subtract the difference between ag_expl and ag_exph
-        f -= 25.0;  //apply a penalty.
+        f -= 10.0;  //apply a penalty.
 		success = false;
 	}
 
 	if (tot_inch < ag_exph) {
         f -= (ag_exph - tot_inch); //subtract the difference between ag_exph and tot_inch
-        f -= 25.0; //apply a penalty.
+        f -= 10.0; //apply a penalty.
 		success = false;
 	}
 
@@ -172,16 +172,14 @@ int main(int number_arguments, char **argv) {
 
 	// Variable Order: tot_inch = A[0], tot_incl = A[1]; ag_exph = A[2]; ag_expl = A[3]; mu = A[4] 
 	// Wage rates: w^h = 16.07; w^l = 10.50
-	// I^h,I^l: 30 < L^h < 50
-	// e^h,e^l: 25 < L^h < 50
-    min_bound[0] = 482.10;
-    max_bound[0] = 803.50;
-    min_bound[1] = 315.00;
-    max_bound[1] = 525.00;
-    min_bound[2] = 401.75;
-    max_bound[2] = 803.50;
-	min_bound[3] = 262.50;
-	max_bound[3] = 525.00;
+    min_bound[0] = 562.45;
+    max_bound[0] = 883.85;
+    min_bound[1] = 367.50;
+    max_bound[1] = 577.50;
+    min_bound[2] = 482.10;
+    max_bound[2] = 883.85;
+	min_bound[3] = 315.00;
+	max_bound[3] = 577.50;
 	min_bound[4] = 0.01;
 	max_bound[4] = 100.00;
 
