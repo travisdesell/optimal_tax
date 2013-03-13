@@ -139,9 +139,9 @@ void check_solution(double tot_inch, double tot_incl, double ag_exph, double ag_
 	double welfare = swf_fb(cleanprice, dirtyprice, wage_h, wage_l, pop_h, pop_l, time_endowment, tot_inch, tot_incl, ag_exph, ag_expl, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta, revenue);
 	double checkwelfare = swf_fb(cleanprice, dirtyprice, wage_h, wage_l, pop_h, pop_l, time_endowment, tot_inch2, tot_incl2, ag_exph2, ag_expl2, mu, A_1, A_2, A_3, B_1, B_2, B_3, a, b, c, eta, revenue);
 
-	cout << "FOC Income (H): " << focinchval << " Foc Income (L): " << focinclval << endl;
-	cout << "FOC Expenditures (H): " << focexphval << " FOC Expenditures (L): " << focexplval << endl;
-	cout << "Budget Constraint: " << bgtcnstval << " Original Welfare: " << welfare << " Adjusted Welfare: " << checkwelfare << endl;
+	(*output_csv) << "FOC Income (H): " << focinchval << " Foc Income (L): " << focinclval << endl;
+	(*output_csv) << "FOC Expenditures (H): " << focexphval << " FOC Expenditures (L): " << focexplval << endl;
+	(*output_csv) << "Budget Constraint: " << bgtcnstval << " Original Welfare: " << welfare << " Adjusted Welfare: " << checkwelfare << endl;
 
 	(*output_csv) << tot_inch << ", " << tot_incl << ", " << ag_exph << ", " << ag_expl << ", " << mu << ", " << welfare << ", " << focinchval << ", " << focinclval << ", " << focexphval << ", " << focexplval << ", " << bgtcnstval << ", " << checkwelfare << endl;
 }
@@ -200,12 +200,32 @@ int main(int number_arguments, char **argv) {
 	}
 
     if (search_type.compare("ps") == 0) {
-        ParticleSwarm ps(min_bound, max_bound, arguments);
-        ps.iterate(objective_function);
+        for (int i = 0; i < 10; i++) {
+            (*output_csv) << endl << "Running particle swarm: " << i << endl;
+
+            ParticleSwarm ps(min_bound, max_bound, arguments);
+            ps.iterate(objective_function);
+
+            double global_best_fitness = ps.get_global_best_fitness();
+            vector<double> global_best = ps.get_global_best();
+
+            (*output_csv) << global_best_fitness << " -- " << vector_to_string(global_best) << endl;
+            check_solution(global_best[0], global_best[1], global_best[2], global_best[3], global_best[4]);
+        }
 
     } else if (search_type.compare("de") == 0) {
-        DifferentialEvolution de(min_bound, max_bound, arguments);
-        de.iterate(objective_function);
+        for (int i = 0; i < 10; i++) {
+            (*output_csv) << endl << "Running differential evolution: " << i << endl;
+
+            DifferentialEvolution de(min_bound, max_bound, arguments);
+            de.iterate(objective_function);
+
+            double global_best_fitness = de.get_global_best_fitness();
+            vector<double> global_best = de.get_global_best();
+
+            (*output_csv) << global_best_fitness << " -- " << vector_to_string(global_best) << endl;
+            check_solution(global_best[0], global_best[1], global_best[2], global_best[3], global_best[4]);
+        }
 
     } else if (search_type.compare("sweep") == 0) {
         vector<double> step_size(5, 0);
