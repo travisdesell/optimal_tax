@@ -44,7 +44,7 @@ double a = 52.50;
 double b = 5.00;
 double c = 5.00;
 double revenue = 0;
-double constraint_penalty = 0.0001;
+double penalty_value = 100;
 
 ofstream *output_csv;
 
@@ -80,23 +80,23 @@ double objective_function(const vector<double> &A) {
 	
 	if (labor_h < labor_l) {
         f -= (labor_l - labor_h); //subtract the difference between labor_l and labor_h
-        f -= 10.0;  //apply a penalty.
+        f -= penalty_value;  //apply a penalty.
 		success = false;
 	} 
 
 	if (ag_exph < ag_expl) {
         f -= (ag_expl - ag_exph); //subtract the difference between ag_expl and ag_exph
-        f -= 10.0;  //apply a penalty.
+        f -= penalty_value;  //apply a penalty.
 		success = false;
 	}
 
 	if (tot_inch < ag_exph) {
         f -= (ag_exph - tot_inch); //subtract the difference between ag_exph and tot_inch
-        f -= 10.0; //apply a penalty.
+        f -= penalty_value; //apply a penalty.
 		success = false;
 	}
 
-//    cout << "success: " << success << endl;
+	// cout << "Success: " << success << endl;
 
 	if (success) {
 		// First-Order Conditions -- Income (high type, low type)
@@ -110,14 +110,14 @@ double objective_function(const vector<double> &A) {
 		// Bgt Constraint
 		double bgtcnstval = bgtcnst(pop_h, pop_l, tot_inch, tot_incl, ag_exph, ag_expl, revenue) * bgtcnst(pop_h, pop_l, tot_inch, tot_incl, ag_exph, ag_expl, revenue);
 
-		/* cout << "POINT: " << vector_to_string(A) << endl;
+		/* cout << "Point: " << vector_to_string(A) << endl;
 		cout << "Revenue: " << revenue << endl;
 		cout << "Bgt Cnst: " << bgtcnst(pop_h, pop_l, tot_inch, tot_incl, ag_exph, ag_expl, revenue) << endl;
 		cout << focinchval << "; " << focinclval << "; " << focexphval << "; " << focexplval << "; " << bgtcnstval << endl; */
 
 		// Minimize sum of squared differences
 		f = - ( focinchval + focinclval + focexphval + focexplval + bgtcnstval );
-		//		cout << "Successful Fitness function: " << f << endl;
+		// cout << "Fitness function: " << f << endl;
     }
 	return f;
 }
@@ -142,19 +142,19 @@ void check_solution(double tot_inch, double tot_incl, double ag_exph, double ag_
 	(*output_csv) << "FOC Income (H): " << focinchval << " Foc Income (L): " << focinclval << endl;
 	(*output_csv) << "FOC Expenditures (H): " << focexphval << " FOC Expenditures (L): " << focexplval << endl;
 	(*output_csv) << "Budget Constraint: " << bgtcnstval << " Original Welfare: " << welfare << " Adjusted Welfare: " << checkwelfare << endl;
-
-	(*output_csv) << tot_inch << ", " << tot_incl << ", " << ag_exph << ", " << ag_expl << ", " << mu << ", " << welfare << ", " << focinchval << ", " << focinclval << ", " << focexphval << ", " << focexplval << ", " << bgtcnstval << ", " << checkwelfare << endl;
 }
 
 int main(int number_arguments, char **argv) {
     vector<string> arguments(argv, argv + number_arguments);
 
-    string output_filename;
+    // Code to create an output file
+	string output_filename;
     get_argument(arguments, "--output_filename", true, output_filename);
 
 	output_csv = new ofstream(output_filename.c_str());
 
-    vector<double> utility_parameters;
+	// Code to enter parameter values
+	vector<double> utility_parameters;
     get_argument_vector(arguments, "--utility_parameters", true, utility_parameters);
     A_1 = utility_parameters[0];
     A_2 = utility_parameters[1];
@@ -164,9 +164,11 @@ int main(int number_arguments, char **argv) {
     B_3 = utility_parameters[5];
     eta = utility_parameters[6];
 
-	(*output_csv) << "Inc_High, Inc_Low, Exp_High, Exp_Low, mu, Welfare, FOC_Inc_H, FOC_Inc_L, FOC_Exp_H, FOC_Exp_L, Bgt Cnst, Welfare2" << endl;
+	(*output_csv) << "Parameters: A_1, A_2, A_3, B_1, B_2, B_3, eta" << endl;
+	(*output_csv) << "Values: " << vector_to_string(utility_parameters) << endl;
 
-    int number_parameters = 5;
+	// Code to set up parameter bounds
+	int number_parameters = 5;
     vector<double> min_bound(number_parameters, 0);
     vector<double> max_bound(number_parameters, 0);
 
@@ -174,15 +176,21 @@ int main(int number_arguments, char **argv) {
 	// Wage rates: w^h = 16.07; w^l = 10.50
     min_bound[0] = 562.45;
     max_bound[0] = 883.85;
-    min_bound[1] = 367.50;
-    max_bound[1] = 577.50;
-    min_bound[2] = 482.10;
+    min_bound[1] = 315.00;
+    max_bound[1] = 525.00;
+    min_bound[2] = 401.75;
     max_bound[2] = 883.85;
-	min_bound[3] = 315.00;
-	max_bound[3] = 577.50;
+	min_bound[3] = 262.50;
+	max_bound[3] = 525.00;
 	min_bound[4] = 0.01;
 	max_bound[4] = 100.00;
 
+	(*output_csv) << "Bounds: I^h, I^l, e^h, e^l, mu" << endl;
+	(*output_csv) << "Min Bound: " << vector_to_string(min_bound) << endl;
+	(*output_csv) << "Max Bound: " << vector_to_string(max_bound) << endl;
+	(*output_csv) << "Penalty Value: " << penalty_value << endl;
+
+	// Search type code
     string search_type;
     if (!get_argument(arguments, "--search_type", false, search_type)) {
         fprintf(stderr, "Improperly specified search type: '%s'\n", search_type.c_str());
@@ -198,7 +206,7 @@ int main(int number_arguments, char **argv) {
 	}
 
     if (search_type.compare("ps") == 0) {
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 50; i++) {
             (*output_csv) << endl << "Running particle swarm: " << i << endl;
 
             ParticleSwarm ps(min_bound, max_bound, arguments);
@@ -212,7 +220,7 @@ int main(int number_arguments, char **argv) {
         }
 
     } else if (search_type.compare("de") == 0) {
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 50; i++) {
             (*output_csv) << endl << "Running differential evolution: " << i << endl;
 
             DifferentialEvolution de(min_bound, max_bound, arguments);
@@ -287,8 +295,6 @@ int main(int number_arguments, char **argv) {
             values.push_back(490.04465848113);
             values.push_back(351.547612048929);
             values.push_back(17.3739636182224);
-
-            524.507057824352 342.708407414792 508.125796992206 359.087048763142 17.8282903179667
 
             cout << "Objective function returns: " << objective_function(values) << endl;
             */
